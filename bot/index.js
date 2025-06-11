@@ -26,12 +26,6 @@ client.connection.connect((err) => {
     console.log('Connecté à la base de données MySQL !');
 });
 
-/* Exemple de requête
-connection.query('SELECT * FROM users', (err, results) => {
-    if (err) throw err;
-    console.log('La solution est :', results);
-});*/
-
 client.commands = new Collection();
 client.slashCommands = new Collection();
 

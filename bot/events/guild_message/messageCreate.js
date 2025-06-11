@@ -31,7 +31,7 @@ module.exports = {
         
         const linkRegex = /(https?:\/\/[^\s]+)/g;
         const discordGifRegex = /https?:\/\/(tenor\.com|giphy\.com|media\.discordapp\.net|cdn\.discordapp\.com)/;
-        if (linkRegex.test(message.content) && !discordGifRegex.test(message.content) && userSettings.level < 5) {
+        if (linkRegex.test(message.content) && !discordGifRegex.test(message.content)) {
             await message.delete();
             return;
         }

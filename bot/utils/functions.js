@@ -1,6 +1,5 @@
 const { MessageEmbed } = require("discord.js");
 const fs = require('fs');
-const { connect } = require("http2");
 const sql = require('mysql2');
 
 module.exports = client => {
