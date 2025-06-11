@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "cli-color": "^2.0.4",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "fs": "^0.0.1-security",
+    "glob": "^11.0.2",
+    "mysql2": "^3.14.1",
+    "path": "^0.12.7"
+  }
+}
