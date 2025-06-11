@@ -3,7 +3,7 @@ const path = require('path');
 var clc = require("cli-color");
 
 module.exports = async client => {
-    const commandsPath = path.join(process.cwd(), 'commands');
+    const commandsPath = path.join(process.cwd(), 'bot/commands');
     const files = getAllFiles(commandsPath, '.js'); // Récupère tous les fichiers .js dans le dossier commands
     console.log(clc.yellow(`Fichiers détectés : ${files.length}`));
 

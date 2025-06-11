@@ -3,7 +3,7 @@ const path = require('path');
 var clc = require("cli-color");
 
 module.exports = async client => {
-    const eventsPath = path.join(process.cwd(), 'events');
+    const eventsPath = path.join(process.cwd(), 'bot/events');
     const files = getAllFiles(eventsPath, '.js'); // Récupère tous les fichiers .js dans le dossier events et ses sous-dossiers
     console.log(clc.yellow(`Fichiers d'événements détectés : ${files.length}`));
 
