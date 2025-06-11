@@ -43,6 +43,19 @@ module.exports = client => {
         });
     };
 
+    client.getGuild = guild => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guilds WHERE id = ?',
+                [guild.id],
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
     client.addGuild = guild => {
         return new Promise((resolve, reject) => {
             client.connection.query(

@@ -14,6 +14,20 @@ module.exports = {
         if(user && message.content.trim() === `<@${client.user.id}>`){
             message.channel.send("Mon prefix sur ce serveur est -> \`\`"+ prefix+"\`\`");
         }
+
+        let userData = await client.getUser(message.author);
+        if (!userData) {
+            await client.addUser(message.author);
+            userData = await client.getUser(message.author)
+            return;
+        }
+
+        let guildData = await client.getGuild(message.guild);
+        if (!guildData) {
+            await client.addGuild(message.guild);
+            guildData = await client.getGuild(message.guild)
+            return;
+        }
         
         const linkRegex = /(https?:\/\/[^\s]+)/g;
         const discordGifRegex = /https?:\/\/(tenor\.com|giphy\.com|media\.discordapp\.net|cdn\.discordapp\.com)/;
