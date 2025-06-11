@@ -1,5 +1,5 @@
 const mysql = require('mysql2');
-require('dotenv').config();
+if (!process.env.TOKEN) require('dotenv').config();
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const client = new Client({
     intents: [
