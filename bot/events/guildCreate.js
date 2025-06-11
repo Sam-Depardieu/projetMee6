@@ -4,5 +4,6 @@ module.exports = {
     execute(client, guild) {
         console.log(`Le bot a rejoint un nouveau serveur : ${guild.name} (ID : ${guild.id})`);
         
+        
     },
 };

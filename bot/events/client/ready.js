@@ -4,8 +4,16 @@ module.exports = {
     async execute(client) {
         console.log('Bot on!');
 
-        const ldg = await client.guilds.cache.get('1361742010117259447');       //test bot
-        ldg.commands.set(client.slashCommands.map(cmd => cmd));
+        const guildArray = await client.getGuilds();
+
+        for (const guild of guildArray) {
+            const cmds = await client.guilds.cache.get(guild.id);
+            if (!cmds) {
+                console.log(`Guild ${guild.name} not found in cache.`);
+                continue;
+            }
+            else cmds.commands.set(client.slashCommands.map(cmd => cmd));
+        }
 
         //client.application.commands.set(client.slashCommands.map(cmd => cmd))                       // global
         

@@ -10,7 +10,7 @@ const client = new Client({
     ],
 });
 
-const connection = mysql.createConnection({
+client.connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -18,7 +18,7 @@ const connection = mysql.createConnection({
     port: process.env.DB_PORT
 });
 
-connection.connect((err) => {
+client.connection.connect((err) => {
     if (err) {
         console.error('Erreur de connexion à la base de données :', err);
         return;
@@ -40,6 +40,8 @@ console.log('Chargement des handlers...');
     console.log(`Chargement du handler : ${handler}`);
     require(`./utils/handlers/${handler}.js`)(client);
 });
+
+require('./utils/functions.js')(client);
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);

@@ -8,7 +8,6 @@ module.exports = async client => {
     console.log(clc.yellow(`Fichiers d'événements détectés : ${files.length}`));
 
     files.forEach(eventFile => {
-        console.log(clc.blue(`Chargement du fichier d'événement : ${eventFile}`));
         try {
             const event = require(eventFile);
 

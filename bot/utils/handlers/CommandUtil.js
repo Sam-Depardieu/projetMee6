@@ -8,7 +8,6 @@ module.exports = async client => {
     console.log(clc.yellow(`Fichiers détectés : ${files.length}`));
 
     files.forEach(cmdFile => {
-        console.log(clc.blue(`Chargement du fichier : ${cmdFile}`));
         try {
             const cmd = require(cmdFile);
 
