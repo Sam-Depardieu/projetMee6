@@ -16,14 +16,14 @@ module.exports = {
         }
 
         let userData = await client.getUser(message.author);
-        if (!userData) {
+        if (!userData || userData.length === 0) {
             await client.addUser(message.author);
             userData = await client.getUser(message.author)
             return;
         }
 
         let guildData = await client.getGuild(message.guild);
-        if (!guildData) {
+        if (!guildData || guildData.length === 0) {
             await client.addGuild(message.guild);
             guildData = await client.getGuild(message.guild)
             return;
