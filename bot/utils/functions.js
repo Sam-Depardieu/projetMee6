@@ -6,8 +6,8 @@ module.exports = client => {
     client.getUser = user => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'SELECT * FROM users WHERE id_user = ?',
-                [user.id],
+                'SELECT * FROM users WHERE idUser = ?',
+                [Number(user.id)],
                 (err, results) => {
                     if (err) return reject(err);
                     resolve(results);
@@ -19,8 +19,8 @@ module.exports = client => {
     client.addUser = user => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'INSERT INTO users (id_user, username) VALUES (?, ?)',
-                [user.id, user.username],
+                'INSERT INTO users (idUser, username) VALUES (?, ?)',
+                [Number(user.id), user.username],
                 (err, results) => {
                     if (err) return reject(err);
                     console.log(`Utilisateur ${user.username} ajouté à la base de donnée.`);
@@ -45,8 +45,8 @@ module.exports = client => {
     client.getGuild = guild => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'SELECT * FROM guilds WHERE id = ?',
-                [guild.id],
+                'SELECT * FROM guilds WHERE idGuild = ?',
+                [Number(guild.id)],
                 (err, results) => {
                     if (err) return reject(err);
                     resolve(results);
@@ -58,8 +58,8 @@ module.exports = client => {
     client.addGuild = guild => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'INSERT INTO guilds (id, name, memberCount) VALUES (?, ?, ?)',
-                [guild.id, guild.name, guild.memberCount],
+                'INSERT INTO guilds (idGuild, nameGuild, memberCount) VALUES (?, ?, ?)',
+                [Number(guild.id), guild.name, guild.memberCount],
                 (err, results) => {
                     if (err) return reject(err);
                     console.log(`Guild ${guild.name} ajouté à la base de donnée.`);
