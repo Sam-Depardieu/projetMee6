@@ -59,7 +59,7 @@ module.exports = client => {
         return new Promise((resolve, reject) => {
             client.connection.query(
                 'INSERT INTO guilds (idGuild, nameGuild, memberCount) VALUES (?, ?, ?)',
-                [Number(guild.id), guild.name, guild.memberCount],
+                [Number(guild.id), guild.name, Number(guild.memberCount)],
                 (err, results) => {
                     if (err) return reject(err);
                     console.log(`Guild ${guild.name} ajouté à la base de donnée.`);
