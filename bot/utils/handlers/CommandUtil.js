@@ -24,7 +24,9 @@ module.exports = async client => {
                 }
             });
 
-            if(cmd.slashAvailable) client.slashCommands.set(cmd.name, cmd);
+            if (cmd.slashAvailable) client.slashCommands.set(cmd.name, cmd);
+            client.commands.set(cmd.name, cmd);
+            
             console.log(clc.green(`Commande chargée: ${cmd.name}`));
         } catch (error) {
             console.error(clc.red(`Erreur lors du chargement du fichier ${cmdFile}:`), error);
