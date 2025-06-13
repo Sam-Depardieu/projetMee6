@@ -6,6 +6,7 @@ module.exports = {
   name: 'unmute',
   description: 'Commande ban pour bannir les membre (no rire)',
   permissions: ['MANAGE_MESSAGES'],
+  slashAvailable: false,
   async run(client, message, args){
 
     let user = message.guild.member.cache.find(message.mentions.users.first());

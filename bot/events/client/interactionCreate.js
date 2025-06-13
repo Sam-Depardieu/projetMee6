@@ -12,6 +12,12 @@ module.exports = {
                     ephemeral: true 
                 });
 
+            if (cmd.slashAvailable === false)
+                return interaction.reply({ 
+                    content: 'Cette commande n\'est pas disponible en slash command!', 
+                    ephemeral: true 
+                });
+
             // Remplacement de runSlash par execute
             cmd.runSlash(client, interaction);
         }

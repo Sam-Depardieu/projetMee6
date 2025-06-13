@@ -2,6 +2,7 @@ module.exports = {
     name: 'del-role',
     description: 'Commande pour enlever un rôle',
     permissions: ['MANAGE_ROLES'],
+    slashAvailable: false,
     async run(client, message, args){
         if (!args[1]) { return message.channel.send('Vous n\'avez pas la spécifié un nom de role !'); }
 

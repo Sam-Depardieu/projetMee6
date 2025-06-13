@@ -5,6 +5,7 @@ module.exports = {
   name: 'mute',
   description: 'Commande pour mute un membre',
   permissions: ['MANAGE_MESSAGES'],
+  slashAvailable: false,
   async run(client, message, args){
     let user = message.mentions.users.first()
     let muteRole = message.guild.roles.cache.find((r) => r.name === 'Muted');

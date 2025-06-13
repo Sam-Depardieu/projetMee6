@@ -5,6 +5,7 @@ module.exports = {
   name: 'unban',
   description: 'Commande ban pour bannir les membre (no rire)',
   permissions: ['ADMINISTRATOR'],
+  slashAvailable: false,
   async run(client, message, args){
 
     let user = await client.users.fetch(args[0]);

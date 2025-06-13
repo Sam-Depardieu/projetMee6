@@ -4,6 +4,7 @@ module.exports = {
   name: 'kick',
   description: 'Commande kick pour virer un membre.',
   permissions: ['MANAGE_ROLES'],
+  slashAvailable: false,
   async run(client, message, args){
     let user = message.mentions.users.first();
 

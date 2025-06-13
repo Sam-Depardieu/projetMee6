@@ -4,6 +4,7 @@ module.exports = {
   name: 'ban',
   description: 'Commande ban pour bannir les membre',
   permissions: ['ADMINISTRATOR'],
+    slashAvailable: false,
   async run(client, message, args){
     let user = message.mentions.users.first() || await client.users.fetch(args[0]).catch(() => null);
     let reason = (args.slice(1).join(' ') || 'Aucune raison spécifiée');

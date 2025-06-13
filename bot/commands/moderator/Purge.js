@@ -5,6 +5,7 @@ module.exports = {
   name: 'purge',
   description: 'Permet de clear des message!',
   permissions: ['MANAGE_MESSAGES'],
+  slashAvailable: false,
   async run(client, message, args) {
     var amount = parseInt(args[0])
 

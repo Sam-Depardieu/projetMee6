@@ -1,18 +1,22 @@
 module.exports = {
     name: 'ready',
-    once: 'true',
+    once: true,
     async execute(client) {
         console.log('Bot on!');
 
         const guildArray = await client.getGuilds();
 
         for (const guild of guildArray) {
-            const cmds = await client.guilds.cache.get(guild.id);
+            const guildId = guild.idGuild; // Toujours string
+            const cmds = client.guilds.cache.get(guildId);
             if (!cmds) {
-                console.log(`Guild ${guild.name} not found in cache.`);
+                console.log(`Guild ${guild.nameGuild} (${guildId}) not found in cache.`);
                 continue;
             }
-            else cmds.commands.set(client.slashCommands.map(cmd => cmd));
+            //await cmds.commands.set([]);
+            //console.log(`Toutes les commandes supprimées pour la guild ${guild.nameGuild} (${guildId})`);
+
+            cmds.commands.set(client.slashCommands.map(cmd => cmd));
         }
 
         //client.application.commands.set(client.slashCommands.map(cmd => cmd))                       // global

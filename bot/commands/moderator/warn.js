@@ -6,6 +6,7 @@ module.exports = {
     name: 'warn',
     description: 'Commande pour avertir un membre',
     permissions: ['MANAGE_MESSAGES'],
+    slashAvailable: false,
     async run(client, message, args){
         let member = message.mentions.members.first();
         if (!member) return message.channel.send("Veuillez mentionner un membre");
