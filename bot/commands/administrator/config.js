@@ -15,11 +15,11 @@ module.exports = {
                     type: 3, // STRING
                     required: true,
                     choices: [
-                        { name: 'Messages', value: 'moderation' },
-                        { name: 'Arrivée Membre', value: 'messages' },
-                        { name: 'Départ Membre', value: 'memberAdd' },
+                        { name: 'Messages', value: 'messages' },
+                        { name: 'Arrivée Membre', value: 'memberAdd' },
+                        { name: 'Départ Membre', value: 'memberRemove' },
                         { name: 'Sanctions', value: 'sanctions' },
-                        { name: 'Autres', value: 'other' }
+                        { name: 'Autres', value: 'general' }
                     ]
                 },
                 {
@@ -62,7 +62,11 @@ module.exports = {
             const type = interaction.options.getString('type');
             const salon = interaction.options.getChannel('salon');
 
-            
+            let logsGuild = await client.getLogsGuild(interaction.guild);
+            if (!logsGuild || logsGuild.length === 0) {
+                await client.createLogsGuild(interaction.guild);
+            }
+            await client.updateLogsGuild(interaction.guild, type, salon.id);
 
             await interaction.reply(`Logs de type **${type}** configurés pour le salon ${salon}.`);
         } else if (interaction.options.getSubcommand() === 'recompense') {

@@ -7,11 +7,11 @@ CREATE TABLE guilds(
 
 CREATE TABLE guildLogs(
    idLog INT,
-   messagesChannelId VARCHAR(32),
-   memberAddChannelId VARCHAR(32),
-   memberRemoveChannelId VARCHAR(32),
-   sanctionsChannelId VARCHAR(32),
-   generalChannelId VARCHAR(32),
+   messages VARCHAR(32),
+   memberAdd VARCHAR(32),
+   memberRemove VARCHAR(32),
+   sanctions VARCHAR(32),
+   general VARCHAR(32),
    idGuild VARCHAR(32) NOT NULL,
    PRIMARY KEY(idLog),
    FOREIGN KEY(idGuild) REFERENCES guilds(idGuild)
