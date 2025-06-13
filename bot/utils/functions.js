@@ -74,6 +74,24 @@ module.exports = client => {
         }).catch(console.error);
     }
 
+    client.updateGuild = (guild, parameter, value) => {
+        if (!['nameGuild', 'memberCount', 'xpSystem', 'logsSystem'].includes(parameter)) {
+            return Promise.reject(new Error('Paramètre de mise à jour invalide.'));
+        }
+        const sql = `UPDATE guilds SET \`${parameter}\` = ? WHERE idGuild = ?`;
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                sql,
+                [value, String(guild.id)],
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Guild ${guild.name} mis à jour dans la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        });
+    }
+
     client.createLogsGuild = guild => {
         return new Promise((resolve, reject) => {
             client.connection.query(
@@ -119,4 +137,46 @@ module.exports = client => {
         });
     };
 
+    client.createLevelRewards = (guild, level, role, message) => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'INSERT INTO guildLevelRewards (level, roleId, rewardMessage, idGuild) VALUES (?, ?, ?, ?)',
+                [level, role.id, message, String(guild.id)], // ID en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Logs pour la guild ${guild.name} créés dans la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+    client.getLevelRewards = guild => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guildLevelRewards WHERE idGuild = ?',
+                [String(guild.id)], // ID en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+    client.updateLevelRewards = (guild, level, role, message) => {
+        
+        const sql = `UPDATE guildLevelRewards SET level = ?, roleId = ?, rewardMessage = ? WHERE idGuild = ?`;
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                sql,
+                [level, role.id, message, String(guild.id)],
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Guild ${guild.name} mis à jour dans la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        });
+    };
 }

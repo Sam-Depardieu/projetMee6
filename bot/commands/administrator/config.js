@@ -5,6 +5,29 @@ module.exports = {
     slashAvailable: true,
     options: [
         {
+            name: 'systeme',
+            description: 'Configurer les systèmes du bot sur le serveur.',
+            type: 1, // SUB_COMMAND
+            options: [
+                {
+                    name: 'type',
+                    description: 'Type de systèmes',
+                    type: 3, // STRING
+                    required: true,
+                    choices: [
+                        { name: 'Logs', value: 'logsSystem' },
+                        { name: 'Niveaux', value: 'xpSystem' }
+                    ]
+                },
+                {
+                    name: 'activer',
+                    description: 'Activer ou désactiver le système',
+                    type: 5, // BOOLEAN
+                    required: true
+                }
+            ]
+        },
+        {
             name: 'logs',
             description: 'Configurer les logs du serveur.',
             type: 1, // SUB_COMMAND
@@ -72,8 +95,26 @@ module.exports = {
         } else if (interaction.options.getSubcommand() === 'recompense') {
             const niveau = interaction.options.getInteger('niveau');
             const role = interaction.options.getRole('role');
-            const message = interaction.options.getString('message') || 'Aucun message personnalisé.';
+            const message = interaction.options.getString('message') || '';
+
+            let levelRewards = await client.getLevelRewards(interaction.guild);
+            if (!levelRewards || levelRewards.length === 0) {
+                await client.createLevelRewards(interaction.guild, niveau, role, message);
+            }
+            else await client.updateLevelRewards(interaction.guild, niveau, role, message);
+
             await interaction.reply(`Récompense configurée : niveau **${niveau}**, rôle ${role}, message : ${message}`);
+        } else if (interaction.options.getSubcommand() === 'systeme') {
+            const type = interaction.options.getString('type');
+            const activer = interaction.options.getBoolean('activer');
+            
+            if (type === 'logsSystem' || type === 'xpSystem') {
+                await client.updateGuild(interaction.guild, type, activer);
+                await interaction.reply(`Système ${type} ${activer ? 'activé' : 'désactivé'} pour ce serveur.`);
+            } 
+            else {
+                await interaction.reply('Type de système invalide.');
+            }
         }
     },
 };
