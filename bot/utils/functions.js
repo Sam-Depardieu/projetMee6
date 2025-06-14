@@ -75,7 +75,7 @@ module.exports = client => {
     }
 
     client.updateGuild = (guild, parameter, value) => {
-        if (!['nameGuild', 'memberCount', 'xpSystem', 'logsSystem'].includes(parameter)) {
+        if (!['nameGuild', 'memberCount', 'xpSystem', 'logsSystem', 'prefix'].includes(parameter)) {
             return Promise.reject(new Error('Paramètre de mise à jour invalide.'));
         }
         const sql = `UPDATE guilds SET \`${parameter}\` = ? WHERE idGuild = ?`;

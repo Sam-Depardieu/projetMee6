@@ -25,9 +25,9 @@ module.exports = async client => {
             });
 
             if (cmd.slashAvailable) client.slashCommands.set(cmd.name, cmd);
-            else client.commands.set(cmd.name, cmd);
+            client.commands.set(cmd.name, cmd);
             let command = await client.getCommandName(cmd.name);
-            if(command.length == 0) await client.addCommand(cmd);
+            if(command.length == 0 && cmd.category != "god") await client.addCommand(cmd);
 
             console.log(clc.green(`Commande chargée: ${cmd.name}`));
         } catch (error) {

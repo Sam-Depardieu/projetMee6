@@ -79,6 +79,19 @@ module.exports = {
                     required: false
                 }
             ]
+        },
+        {
+            name: 'prefix',
+            description: 'Configurer le prefix du bot sur votre serveur.',
+            type: 1, // SUB_COMMAND
+            options: [
+                {
+                    name: 'prefix',
+                    description: 'Nouveau prefix',
+                    type: 3, // STRING
+                    required: true
+                }
+            ]
         }
     ],
     async runSlash(client, interaction) {
@@ -115,6 +128,17 @@ module.exports = {
             } 
             else {
                 await interaction.reply('Type de système invalide.');
+            }
+        } else if (interaction.options.getSubcommand() === 'prefix') {
+            const prefix = interaction.options.getString('prefix');
+            
+            if (prefix.length > 5) {
+                return interaction.reply({ content: 'Le prefix ne peut pas dépasser 10 caractères.', ephemeral: true });
+            }
+            else
+            {
+                await client.updateGuild(interaction.guild, 'prefix', prefix);
+                await interaction.reply(`Prefix du serveur mis à jour : \`${prefix}\``);
             }
         }
     },
