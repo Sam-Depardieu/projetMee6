@@ -1,6 +1,7 @@
 module.exports = {
     name: 'del-role',
     description: 'Commande pour enlever un rôle',
+    category: 'moderation',
     permissions: ['MANAGE_ROLES'],
     slashAvailable: false,
     async run(client, message, args){

@@ -4,6 +4,7 @@ module.exports = {
   name: 'ban',
   description: 'Commande ban pour bannir un utilisateur',
   message: '{user.tag} ({user.id}) a été banni pour : {reason}',
+  category: 'administration',
   permissions: ['ADMINISTRATOR'],
   slashAvailable: false,
   async run(client, message, args){

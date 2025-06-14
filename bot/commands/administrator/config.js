@@ -2,6 +2,7 @@ module.exports = {
     name: 'config',
     description: 'Configurez au mieux le serveur!',
     permissions: ['ADMINISTRATOR'],
+    category: 'administration',
     slashAvailable: true,
     options: [
         {

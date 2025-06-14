@@ -5,6 +5,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: 'unmute',
   description: 'Commande ban pour bannir les membre (no rire)',
+    category: 'moderation',
   permissions: ['MANAGE_MESSAGES'],
   slashAvailable: false,
   async run(client, message, args){

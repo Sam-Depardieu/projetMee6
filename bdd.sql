@@ -140,6 +140,7 @@ CREATE TABLE commands(
    nameCommand VARCHAR(50) NOT NULL,
    description TEXT NOT NULL,
    message TEXT NOT NULL,
+   category VARCHAR(50) NOT NULL,
    permissions VARCHAR(50),
    PRIMARY KEY(idCommand),
    UNIQUE(nameCommand)

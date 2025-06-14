@@ -5,6 +5,7 @@ module.exports = {
 	name: 'server',
 	description: 'Affiche des informations sur le serveur actuel.',
     permissions: ['SEND_MESSAGES'],
+    category: 'utility',
 	message: `This server is {guild.name} and has {guild.memberCount} members.`,
 	slashAvailable: true,
 	async runSlash(client, interaction) {

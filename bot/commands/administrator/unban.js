@@ -4,6 +4,7 @@ module.exports = {
   name: 'unban',
   description: 'Commande pour unban un utilisateur',
   message: '{user.tag} ({user.id}) a été débanni',
+  category: 'administration',
   permissions: ['ADMINISTRATOR'],
   slashAvailable: false,
   async run(client, message, args){

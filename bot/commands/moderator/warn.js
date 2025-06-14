@@ -5,6 +5,7 @@ const warns = require('./warns.json')
 module.exports = {
     name: 'warn',
     description: 'Commande pour avertir un membre',
+    category: 'moderation',
     permissions: ['MANAGE_MESSAGES'],
     slashAvailable: false,
     async run(client, message, args){

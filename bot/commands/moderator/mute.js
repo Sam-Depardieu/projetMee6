@@ -4,6 +4,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: 'mute',
   description: 'Commande pour mute un membre',
+    category: 'moderation',
   permissions: ['MANAGE_MESSAGES'],
   slashAvailable: false,
   async run(client, message, args){

@@ -3,6 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: 'kick',
   description: 'Commande kick pour virer un membre.',
+    category: 'moderation',
   permissions: ['MANAGE_ROLES'],
   slashAvailable: false,
   async run(client, message, args){

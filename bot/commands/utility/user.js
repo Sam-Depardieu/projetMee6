@@ -5,6 +5,7 @@ module.exports = {
 	name: 'user',
 	description: 'Affiche des informations sur l\'utilisateur qui a exécuté la commande.',
     permissions: ['SEND_MESSAGES'],
+    category: 'utility',
 	message: `This command was run by {user.username}, who joined on {member.joinedAt}.`,
 	slashAvailable: true,
 	async runSlash(client, interaction) {
