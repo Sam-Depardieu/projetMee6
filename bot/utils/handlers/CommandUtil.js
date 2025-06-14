@@ -7,7 +7,7 @@ module.exports = async client => {
     const files = getAllFiles(commandsPath, '.js'); // Récupère tous les fichiers .js dans le dossier commands
     console.log(clc.yellow(`Fichiers détectés : ${files.length}`));
 
-    files.forEach(cmdFile => {
+    files.forEach(async cmdFile =>{
         try {
             const cmd = require(cmdFile);
 
@@ -25,8 +25,10 @@ module.exports = async client => {
             });
 
             if (cmd.slashAvailable) client.slashCommands.set(cmd.name, cmd);
-            client.commands.set(cmd.name, cmd);
-            
+            else client.commands.set(cmd.name, cmd);
+            let command = await client.getCommandName(cmd.name);
+            if(command.length == 0) await client.addCommand(cmd);
+
             console.log(clc.green(`Commande chargée: ${cmd.name}`));
         } catch (error) {
             console.error(clc.red(`Erreur lors du chargement du fichier ${cmdFile}:`), error);

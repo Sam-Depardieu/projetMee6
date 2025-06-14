@@ -2,7 +2,8 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   name: 'ban',
-  description: 'Commande ban pour bannir les membre',
+  description: 'Commande ban pour bannir un utilisateur',
+  message: '{user.tag} ({user.id}) a été banni pour : {reason}',
   permissions: ['ADMINISTRATOR'],
   slashAvailable: false,
   async run(client, message, args){
@@ -22,18 +23,16 @@ module.exports = {
       }
     }
 
-    const embed = new MessageEmbed()
-      .setTitle(`${user.tag} (${user.id})`)
-      .setColor("#dc143c")
-      .setDescription(`**Action**: ban\n**Raison**: ${reason}`)
-      .setTimestamp()
-      .setFooter({ text: message.author.username, iconURL: message.author.displayAvatarURL() });
+    const banMsg = this.message
+      .replace('{user.tag}', user.tag)
+      .replace('{user.id}', user.id)
+      .replace('{reason}', reason);
 
     if (client.getGuild(message.guild).logChannelID != '0') {
       client.channels.cache.get(client.getGuild(message.guild).logChannelID != undefined).send({ embeds: [embed] });
     }
 
-    message.channel.send({ embeds: [embed] })
+    message.channel.send({ content: banMsg});
   }
 
 };

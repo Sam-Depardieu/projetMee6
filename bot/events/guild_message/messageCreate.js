@@ -45,7 +45,4 @@ module.exports = {
 
         if (cmd) cmd.run(client, message, args);
     },
-
-
-
 };

@@ -1,9 +1,9 @@
 const { MessageEmbed } = require("discord.js");
 
-
 module.exports = {
   name: 'unban',
-  description: 'Commande ban pour bannir les membre (no rire)',
+  description: 'Commande pour unban un utilisateur',
+  message: '{user.tag} ({user.id}) a été débanni',
   permissions: ['ADMINISTRATOR'],
   slashAvailable: false,
   async run(client, message, args){
@@ -13,16 +13,12 @@ module.exports = {
 
     message.guild.members.unban(user);
 
-    const embed = new MessageEmbed()
-
-      .setTitle(`${user.username} (${user.id})`, user.displayAvatarURL())
-      .setColor("#35f092")
-      .setDescription(`**Action**: unban`)
-      .setTimestamp()
-      .setFooter({text:message.author.username, value:message.author.displayAvatarURL()});
+    const banMsg = this.message
+      .replace('{user.tag}', user.tag)
+      .replace('{user.id}', user.id);
 
     if(client.getGuild(message.guild).logChannelID != undefined) client.channels.cache.get(client.getGuild(message.guild).logChannelID).send(embed)
-    message.channel.send({ embeds: [embed] })
+    message.channel.send({ content: banMsg });
   }
 };
 

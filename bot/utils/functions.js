@@ -179,4 +179,31 @@ module.exports = client => {
             );
         });
     };
+
+    client.addCommand = (command) => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'INSERT INTO commands (nameCommand, description, message, permissions) VALUES (?, ?, ?, ?)',
+                [command.name, command.description, command.message, JSON.stringify(command.permissions || [])],
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Commande ${command.name} ajoutée à la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        });
+    }
+
+    client.getCommandName = (name) => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM commands WHERE nameCommand = ?',
+                [name],
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    }
 }

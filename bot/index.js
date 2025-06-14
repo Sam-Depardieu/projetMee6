@@ -29,13 +29,14 @@ client.connection.connect((err) => {
 client.commands = new Collection();
 client.slashCommands = new Collection();
 
+require('./utils/functions.js')(client);
+
 console.log('Chargement des handlers...');
 ['CommandUtil', 'EventUtil'].forEach(handler => {
     console.log(`Chargement du handler : ${handler}`);
     require(`./utils/handlers/${handler}.js`)(client);
 });
 
-require('./utils/functions.js')(client);
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
