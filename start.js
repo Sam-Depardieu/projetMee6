@@ -5,9 +5,9 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = 80;
 
-require('./bot/index.js'); // Lance ton bot Discord
+//require('./bot/index.js'); // Lance ton bot Discord
 
 // Session (pour garder l'utilisateur connecté)
 app.use(session({

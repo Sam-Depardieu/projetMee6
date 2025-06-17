@@ -4,7 +4,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
   name: 'purge',
   description: 'Permet de clear des message!',
-    category: 'moderation',
+  category: 'moderation',
   permissions: ['MANAGE_MESSAGES'],
   slashAvailable: false,
   async run(client, message, args) {

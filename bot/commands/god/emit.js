@@ -7,9 +7,7 @@ module.exports = {
     category: 'god',
     slashAvailable: true,
     run(client, message, args) {
-        if(message.author.id != process.env.OWNER_ID) {
-            return message.reply({ content: 'Vous n\'êtes pas autorisé à utiliser cette commande!'});
-        }
+        if(message.author.id != process.env.OWNER_ID) return;
 
         if (!args[0] || !args[0].match(/^(guildMemberAdd|guildMemberRemove|guildCreate)$/)) return message.reply('Merci d\'entrer un événement valide (\ guildMemberAdd\`/\`guildMemberRemove\`/\`guildCreate)');
         if (args[0] == 'guildMemberAdd') {
@@ -49,9 +47,7 @@ module.exports = {
         }
     ],
     runSlash (client, interaction) {
-        if(interaction.member.id != process.env.OWNER_ID) {
-            return interaction.reply({ content: 'Vous n\'êtes pas autorisé à utiliser cette commande!', ephemeral: MessageFlags.Ephemeral  });
-        }
+        if(interaction.member.id != process.env.OWNER_ID) return;
 
         const evtChoices = interaction.options.getString('event');
         if (evtChoices == 'guildMemberAdd') {

@@ -56,7 +56,7 @@ module.exports = {
             ]
         },
         {
-            name: 'recompense',
+            name: 'niveaux',
             description: 'Configurer une récompense de niveau.',
             type: 1, // SUB_COMMAND
             options: [
@@ -92,7 +92,20 @@ module.exports = {
                     required: true
                 }
             ]
-        }
+        },
+        {
+            name: 'image',
+            description: 'Définir une image personnalisée pour le serveur.',
+            type: 1, // SUB_COMMAND
+            options: [
+                {
+                    name: 'fichier',
+                    description: 'Image à enregistrer',
+                    type: 11, // ATTACHMENT
+                    required: true
+                }
+            ]
+        },
     ],
     async runSlash(client, interaction) {
         if (interaction.options.getSubcommand() === 'logs') {
@@ -106,7 +119,7 @@ module.exports = {
             await client.updateLogsGuild(interaction.guild, type, salon.id);
 
             await interaction.reply(`Logs de type **${type}** configurés pour le salon ${salon}.`);
-        } else if (interaction.options.getSubcommand() === 'recompense') {
+        } else if (interaction.options.getSubcommand() === 'niveaux') {
             const niveau = interaction.options.getInteger('niveau');
             const role = interaction.options.getRole('role');
             const message = interaction.options.getString('message') || '';
@@ -123,6 +136,8 @@ module.exports = {
             const activer = interaction.options.getBoolean('activer');
             
             if (type === 'logsSystem' || type === 'xpSystem') {
+                if(type === 'xpSystem') await client.createGuildLevelSystem(interaction.guild, activer);
+                if(type === 'logsSystem') await client.createGuildLogsSystem(interaction.guild, activer);
                 await client.updateGuild(interaction.guild, type, activer);
                 await interaction.reply(`Système ${type} ${activer ? 'activé' : 'désactivé'} pour ce serveur.`);
             } 
@@ -139,6 +154,19 @@ module.exports = {
             {
                 await client.updateGuild(interaction.guild, 'prefix', prefix);
                 await interaction.reply(`Prefix du serveur mis à jour : \`${prefix}\``);
+            }
+        } else if (interaction.options.getSubcommand() === 'image') {
+            const attachment = interaction.options.getAttachment('fichier');
+            if (!attachment || !attachment.contentType.startsWith('image/')) {
+                return interaction.reply({ content: "Merci de fournir un fichier image valide.", ephemeral: true });
+            }
+            // Enregistre l'image dans un dossier spécifique
+            const fileName = `guild_${interaction.guild.id}_${Date.now()}.${attachment.url.split('.').pop()}`;
+            try {
+                await client.saveImage(attachment.url, fileName);
+                await interaction.reply(`Image personnalisée enregistrée pour ce serveur !`);
+            } catch (err) {
+                await interaction.reply({ content: "Erreur lors de l'enregistrement de l'image.", ephemeral: true });
             }
         }
     },
