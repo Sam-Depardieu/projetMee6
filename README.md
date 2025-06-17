@@ -1,4 +1,4 @@
-# 🚀 Mee6 Web Dashboard - Custom
+# 🚀 Mee8 Web Dashboard - Custom
 
 Ce projet est un site web sécurisé permettant aux utilisateurs de se connecter avec Discord, visualiser leurs serveurs, et y ajouter un bot.
 
@@ -58,7 +58,7 @@ node start.js
 Pour lancer en arrière-plan avec PM2 :
 
 ```bash
-pm2 start start.js --name mee6
+pm2 start start.js --name mee8
 ```
 
 ---
