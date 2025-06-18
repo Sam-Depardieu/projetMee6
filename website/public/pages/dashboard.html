@@ -195,19 +195,18 @@
             const guilds = JSON.parse(localStorage.getItem('guilds') || '[]');
             const container = document.getElementById('serverList');
             guilds
-              .filter(g => (g.permissions & 0x20) === 0x20) // MANAGE_GUILD
+              .filter(g => (g.permissions & 0x20) === 0x20)
               .forEach(g => {
-                // Récupère les initiales du nom du serveur
                 const initials = g.name
                   .split(' ')
                   .map(w => w[0])
                   .join('')
-                  .slice(0, 5);
+                  .slice(0, 2)
+                  .toUpperCase();
 
-                // Si l'icône existe, affiche l'image, sinon affiche un rond avec les initiales
                 const icon = g.icon
-                  ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" class="w-20 h-20 rounded-full mx-auto mb-4" />`
-                  : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-red-700 text-white text-3xl font-bold">${initials}</div>`;
+                  ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" class="w-20 h-20 rounded-full mx-auto mb-4 animate-slide-in-right" />`
+                  : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-red-700 text-white text-3xl font-bold animate-slide-in-right">${initials}</div>`;
 
                 container.innerHTML += `
                   <div class="card bg-white/5 border border-white/10 rounded-2xl p-8 text-center transition-colors feature-card">
