@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurer le serveur</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-black text-white max-h-[400px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-red-500">
+  <header>
+    <label for="guildSelect">Choisir un serveur :</label>
+    <select id="guildSelect" onchange="changeGuild(this)">
+      <!-- rempli dynamiquement -->
+    </select>
+  </header>
+
+  <aside>
+    <ul>
+      <li onclick="showPanel('welcome')">Messages de bienvenue</li>
+      <li onclick="showPanel('moderation')">Modération</li>
+    </ul>
+  </aside>
+
+  <main id="content">
+    <section id="welcome" class="panel">Configuration des messages de bienvenue</section>
+    <section id="moderation" class="panel">Outils de modération</section>
+  </main>
+
+  <script>
+    const guilds = JSON.parse(localStorage.getItem('guilds') || '[]');
+    const currentGuild = window.location.pathname.split('/').pop();
+
+    const select = document.getElementById('guildSelect');
+    guilds.forEach(g => {
+      if ((g.permissions & 0x20) !== 0x20) return;
+      const opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.name;
+      if (g.id === currentGuild) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    function changeGuild(sel) {
+      window.location.href = `/dashboard/${sel.value}`;
+    }
+
+    function showPanel(id) {
+      document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Par défaut
+    showPanel('welcome');
+  </script>
+</body>
+</html>
