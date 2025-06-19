@@ -6,6 +6,9 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+require('./bot/index.js');
+const client = require('./bot'); // Import du client Discord
+
 // Import des routes
 const authRoute = require('./routes/auth');
 const dashboardRoute = require('./routes/dashboard');

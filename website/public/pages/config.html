@@ -1,56 +1,340 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configurer le serveur</title>
-  <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body class="bg-black text-white max-h-[400px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-red-500">
-  <header>
-    <label for="guildSelect">Choisir un serveur :</label>
-    <select id="guildSelect" onchange="changeGuild(this)">
-      <!-- rempli dynamiquement -->
-    </select>
-  </header>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MEE7</title>
+    <link rel="icon" type="image/x-icon" href="../images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <aside>
-    <ul>
-      <li onclick="showPanel('welcome')">Messages de bienvenue</li>
-      <li onclick="showPanel('moderation')">Modération</li>
-    </ul>
-  </aside>
+    <meta content="#dc2626" data-react-helmet="true" name="theme-color" />
+    <meta
+      name="title"
+      content="MEE7 - Take Your Server to the Next Level"
+    />
+    <meta
+      name="description"
+      content="MEE7 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="#" />
+    <meta
+      property="og:title"
+      content="MEE7 - Take Your Server to the Next Level"
+    />
+    <meta
+      property="og:description"
+      content="MEE7 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="og:image" content="./images/logo.png" />
+    <meta property="og:color" content="#5b21b6" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="#" />
+    <meta
+      property="twitter:title"
+      content="MEE7 - Take Your Server to the Next Level"
+    />
+    <meta
+      property="twitter:description"
+      content="MEE7 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="twitter:image" content="../images/logo.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/script.js"></script>
+  </head>
+  <body class="bg-black text-white min-h-screen">
+    <script>
+      fetch('/dashboard/user')
+      .then(res => {
+        if (!res.ok) throw new Error('Not logged in');
+        return res.json();
+      })
+      .then(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        showUser(user);
+        return fetch('/dashboard/guilds');
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('No guilds');
+        return res.json();
+      })
+      .then(guilds => {
+        const filteredGuilds = guilds.filter(g => g.hasBot && (g.permissions & 0x20) === 0x20);
+        localStorage.setItem('guilds', JSON.stringify(filteredGuilds));
+        showGuilds(filteredGuilds);
+        document.getElementById('loader').style.display = 'none'; // <-- Ajouté ici
+      })
+      .catch(() => {
+        showUser(null);
+        showGuilds([]);
+        document.getElementById('loader').style.display = 'none'; // <-- Ajouté ici aussi
+      });
 
-  <main id="content">
-    <section id="welcome" class="panel">Configuration des messages de bienvenue</section>
-    <section id="moderation" class="panel">Outils de modération</section>
-  </main>
+      function showUser(user) {
+        const userArea = document.getElementById('userArea');
+        if (user) {
+          userArea.innerHTML = `
+            <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
+              <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
+              <span class="font-semibold">${user.username}</span>
+              <a href="/logout" class="ml-2 text-red-400 hover:underline">Déconnexion</a>
+            </div>
+          `;
+        } else {
+          userArea.innerHTML = `
+            <a href="/login">
+              <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
+                Se connecter à Discord
+              </button>
+            </a>
+          `;
+        }
+        userArea.classList.remove('hidden');
+      }
 
-  <script>
-    const guilds = JSON.parse(localStorage.getItem('guilds') || '[]');
-    const currentGuild = window.location.pathname.split('/').pop();
+      function showGuilds(guilds) {
+        // Filtrer les guilds où le bot est présent et où l'utilisateur est admin
+        // Adapte la propriété "bot" selon ta structure (parfois c'est "g.has_bot" ou autre)
+        const filteredGuilds = guilds;
 
-    const select = document.getElementById('guildSelect');
-    guilds.forEach(g => {
-      if ((g.permissions & 0x20) !== 0x20) return;
-      const opt = document.createElement('option');
-      opt.value = g.id;
-      opt.textContent = g.name;
-      if (g.id === currentGuild) opt.selected = true;
-      select.appendChild(opt);
-    });
+        const select = document.getElementById('guildSelect');
+        select.innerHTML = ""; // Vide le menu déroulant
 
-    function changeGuild(sel) {
-      window.location.href = `/dashboard/${sel.value}`;
-    }
+        if (filteredGuilds.length === 0) {
+          select.innerHTML = `<option disabled selected>Aucun serveur disponible</option>`;
+          return;
+        }
 
-    function showPanel(id) {
-      document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
+        filteredGuilds.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g.id;
+          option.textContent = g.name;
+          select.appendChild(option);
+        });
+      }
+    </script>
+    <div
+      id="loader"
+      class="fixed inset-0 bg-black z-50 flex items-center justify-center"
+    >
+      <div
+        class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+    </div>
+    <nav class="fixed w-full z-50 top-0">
+      <div class="nav-blur bg-black/30 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-20">
+            <div class="flex items-center gap-2">
+              <img
+                src="../images/logo.png"
+                alt="MEE7 Logo"
+                class="w-10 h-10 rounded-lg"
+              />
+              <span
+                class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700"
+                >MEE7</span
+              >
+            </div>
 
-    // Par défaut
-    showPanel('welcome');
-  </script>
-</body>
+            <div class="hidden md:flex gap-8">
+              <a
+                href="../index.html#hero"
+                class="text-white/70 hover:text-white transition-colors"
+                >Home</a
+              >
+              <a
+                href="../index.html#features"
+                class="text-white/70 hover:text-white transition-colors"
+                >Features</a
+              >
+              <a
+                href="../index.html#commands"
+                class="text-white/70 hover:text-white transition-colors"
+                >Commands</a
+              >
+              <a
+                href="../index.html#testimonials"
+                class="text-white/70 hover:text-white transition-colors"
+                >Testimonials</a
+              >
+            </div>
+
+            <div class="md:hidden">
+              <button onclick="toggleMobileMenu()" class="text-white p-2" aria-label="Open mobile menu">
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    class="menu-icon"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+
+            <a id="userArea" class="hidden md:block"></a>
+          </div>
+
+          <div id="mobileMenu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-black/50 rounded-lg mt-2">
+              <a
+                href="../index.html#hero"
+                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
+                >Home</a
+              >
+              <a
+                href="../index.html#features"
+                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
+                >Features</a
+              >
+              <a
+                href="../index.html#commands"
+                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
+                >Commands</a
+              >
+              <a
+                href="../index.html#testimonials"
+                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
+                >Testimonials</a
+              >
+              <a id="userArea" class="hidden md:block"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <section id="config" class="flex min-h-screen relative max-w-7xl mx-auto pt-20">
+      <!-- Colonne de gauche : navigation modules -->
+      <aside class="fixed top-20 left-0 w-64 h-[calc(100vh-5rem)] bg-gray-900 p-6 text-white rounded-r-lg z-40 overflow-y-auto">
+        </div>
+        <label for="guildSelect" class="sr-only">Select Guild</label>
+        <select id="guildSelect" class="bg-white/10 text-white px-10 py-2 rounded-lg outline-none mb-6"></select>
+        <h3 class="text-xl font-bold mb-6">Principales</h3>
+        <ul class="space-y-4">
+          <li><button data-module="welcome" class="w-full text-left hover:bg-gray-800 p-2 rounded"><i class="fa-solid fa-message"></i><span>  Arrivées et départs</span></button></li>
+          <li><button data-module="autoMod" class="w-full text-left hover:bg-gray-800 p-2 rounded"><i class="fa-solid fa-ban"></i>  Modération</button></li>
+          <li><button data-module="levels" class="w-full text-left hover:bg-gray-800 p-2 rounded"><i class="fa-solid fa-arrow-trend-up"></i>  Niveaux</button></li>
+          <li><button data-module="customCmds" class="w-full text-left hover:bg-gray-800 p-2 rounded"><i class="fa-solid fa-terminal"></i>  Commandes personnalisées</button></li>
+        </ul>
+      </aside>
+
+      <!-- Colonne de droite : configuration active -->
+      <div class="ml-64 w-[calc(100%-16rem)] bg-black p-6 text-white min-h-screen">
+        <div id="module-welcome" class="module-config hidden">
+          <h3 class="text-xl font-semibold mb-4">🎉 Configuration – Bienvenue</h3>
+          <label class="block mb-2">Message d'accueil</label>
+          <input type="text" class="w-full bg-gray-800 p-2 rounded" placeholder="Bienvenue sur notre serveur !" />
+          <div class="mt-4"><label><input type="checkbox" /> Attribuer un rôle d'accueil</label></div>
+        </div>
+
+        <div id="module-autoMod" class="module-config hidden">
+          <h3 class="text-xl font-semibold mb-4">🛡️ Configuration – Modération</h3>
+          <div><label><input type="checkbox" /> Filtrer les liens externes</label></div>
+          <div><label><input type="checkbox" /> Filtre anti-spam</label></div>
+          <label class="block mt-4 mb-2">Timeout sur infractions</label>
+          <input type="number" class="w-24 bg-gray-800 p-2 rounded" value="10" placeholder="Durée en secondes" title="Durée du timeout en secondes" /> secondes
+        </div>
+
+        <div id="module-levels" class="module-config hidden">
+          <h3 class="text-xl font-semibold mb-4">📈 Configuration – Niveaux</h3>
+          <label class="block mb-2">XP par message</label>
+          <input type="number" class="w-24 bg-gray-800 p-2 rounded" value="15" placeholder="XP par message" title="Nombre de points d'expérience attribués par message" />
+          <label class="block mt-4 mb-2">Rôles de récompense</label>
+          <textarea class="w-full bg-gray-800 p-2 rounded" placeholder="Ex. Niveau 10 : @Veteran"></textarea>
+        </div>
+
+        <div id="module-customCmds" class="module-config hidden">
+          <h3 class="text-xl font-semibold mb-4">⚙️ Configuration – Commandes personnalisées</h3>
+          <button class="bg-blue-600 px-4 py-2 rounded mb-4">Créer une commande</button>
+          <ul class="list-disc pl-5">
+            <li>`!salut` → envoie "Salut {user}!"</li>
+            <!-- ... -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.querySelectorAll('aside button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.module-config').forEach(div => div.classList.add('hidden'));
+          document.getElementById(`module-${btn.dataset.module}`).classList.remove('hidden');
+        });
+      });
+    </script>
+
+
+    <footer class="ml-64 w-[calc(100%-16rem)] text-white py-16 border-t border-white/10 ">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div>
+            <img
+              class="h-10 mb-6"
+              src="../images/logo.png"
+              alt="MEE7 Logo"
+            />
+            <p class="text-lg text-white/70">
+              MEE7 is the ultimate tool for transforming your Discord server
+              management with powerful features like leveling, moderation,
+              giveaways, and more!
+            </p>
+          </div>
+          <div>
+            <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
+            <ul class="space-y-4">
+              <li>
+                <a href="../index.html#hero" class="text-white/70 hover:text-white">Home</a>
+              </li>
+              <li>
+                <a href="../index.html#features" class="text-white/70 hover:text-white"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="../index.html#commands" class="text-white/70 hover:text-white"
+                  >Commands</a
+                >
+              </li>
+              <li>
+                <a href="../index.html#testimonials" class="text-white/70 hover:text-white"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
+            <ul class="space-y-4">
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">Invite</a>
+              </li>
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">Discord</a>
+              </li>
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">GitHub</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 border-t border-white/20 pt-6 text-center">
+          <p class="text-sm text-white/50">
+            © 2025 MEE7. All rights reserved. • Not affiliated with Discord
+            Inc.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>
