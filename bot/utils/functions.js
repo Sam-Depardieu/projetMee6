@@ -6,7 +6,7 @@ module.exports = client => {
     client.getUser = user => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'SELECT * FROM guildUsers WHERE idUser = ?',
+                'SELECT * FROM users WHERE idUser = ?',
                 [user.id],
                 (err, results) => {
                     if (err) return reject(err);
@@ -33,6 +33,19 @@ module.exports = client => {
                             resolve(results);
                         })
                         .catch(reject);
+                }
+            );
+        });
+    };
+
+    client.getGuildUser = user => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guildUsers WHERE idUser = ?',
+                [user.id],
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
                 }
             );
         });
