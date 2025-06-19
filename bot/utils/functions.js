@@ -19,11 +19,33 @@ module.exports = client => {
     client.addUser = (message, user) => {
         return new Promise((resolve, reject) => {
             client.connection.query(
+                'INSERT INTO users (idUser, username) VALUES (?, ?)',
+                [user.id, user.username], // Assurez-vous que l'ID de la guilde est en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Utilisateur ${user.username}(${user.id}) ajouté à la base de donnée.`);
+                    // Déplacez la logique asynchrone ici
+                    client.getGuildUser(message, user)
+                        .then(guildUsers => {
+                            if (guildUsers.length === 0) {
+                                client.addGuildUser(message, user).catch(console.error);
+                            }
+                            resolve(results);
+                        })
+                        .catch(reject);
+                }
+            );
+        });
+    };
+
+    client.addGuildUser = (message, user) => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
                 'INSERT INTO guildUsers (idUser, lastMessageId, idGuild) VALUES (?, ?, ?)',
                 [user.id, message.id, String(message.guild.id)], // Assurez-vous que l'ID de la guilde est en string
                 (err, results) => {
                     if (err) return reject(err);
-                    console.log(`Utilisateur ${user.username}(${user.id}) ajouté à la base de donnée.`);
+                    console.log(`Utilisateur guild ${user.username}(${user.id}) ajouté à la base de donnée.`);
                     resolve(results);
                 }
             );

@@ -5,16 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Redirection...</title>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const guildId = params.get("state");
 
-    if (guildId) {
-      // Redirection immédiate vers le dashboard du serveur
-      window.location.href = `/dashboard/${guildId}`;
-    } else {
-      // Sinon rediriger vers la page d'accueil ou une erreur
-      window.location.href = "/";
-    }
+    const guildId = new URLSearchParams(window.location.search).get("guildId");
+    window.location.href = guildId ? `/dashboard/${guildId}` : '/dashboard';
+
+
   </script>
 </head>
 <body>

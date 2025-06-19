@@ -13,6 +13,8 @@ router.get('/login', (req, res) => {
 // Route /callback : récupère le token et les infos utilisateur
 router.get('/callback', async (req, res) => {
   const code = req.query.code;
+  const state = req.query.state;
+
   if (!code) return res.send("Pas de code reçu.");
 
   try {
@@ -20,14 +22,14 @@ router.get('/callback', async (req, res) => {
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
       grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: process.env.REDIRECT_URI,
+      code,
+      redirect_uri: process.env.REDIRECT_URI, // = https://mee7.sa-it.fr/callback
       scope: 'identify guilds'
     }), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
-    const { access_token } = tokenRes.data;
+    const access_token = tokenRes.data.access_token;
 
     const userRes = await axios.get('https://discord.com/api/users/@me', {
       headers: { Authorization: `Bearer ${access_token}` }
@@ -40,12 +42,13 @@ router.get('/callback', async (req, res) => {
     req.session.user = userRes.data;
     req.session.guilds = guildsRes.data;
 
-    res.redirect('/dashboard');
+    res.redirect(`/pages/oauth-success.html${state ? '?guildId=' + state : ''}`);
   } catch (err) {
     console.error('Erreur OAuth2 :', err.response?.data || err);
     res.send("Erreur lors de la connexion Discord.");
   }
 });
+
 
 // Route /logout : détruit la session
 router.get('/logout', (req, res) => {

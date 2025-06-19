@@ -98,7 +98,7 @@
         userArea.classList.remove('hidden');
       }
       function addBot(guildId) {
-        const redirect = encodeURIComponent("https://mee7.sa-it.fr/oauth-success.html");
+        const redirect = encodeURIComponent("https://sa-it.fr/callback");
         const url = `https://discord.com/oauth2/authorize?client_id=1371452942539948133&scope=bot+applications.commands&permissions=8&guild_id=${guildId}&redirect_uri=${redirect}&response_type=code&state=${guildId}`;
         window.open(url, "_blank"); // Ouvre dans un nouvel onglet
       }
