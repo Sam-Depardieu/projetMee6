@@ -109,14 +109,20 @@
               ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" class="w-20 h-20 rounded-full mx-auto mb-4 animate-slide-in-right" />`
               : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold animate-slide-in-right" style="background:#dc2626">${initials}</div>`;
 
+            // Si le bot est déjà sur le serveur, bouton "Configurer", sinon bouton "Ajouter le bot"
+            const actionButton = g.hasBot
+              ? `<a href="/dashboard/${g.id}" class="button bg-[#7289da] hover:bg-[#5865F2] text-white px-4 py-2 rounded-lg">Configurer</a>`
+              : `<a href="https://discord.com/oauth2/authorize?client_id=1371452942539948133&scope=bot+applications.commands&permissions=8&guild_id=${g.id}" target="_blank" class="button bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">Ajouter le bot</a>`;
+
             container.innerHTML += `
-            <div class="card bg-white/5 border border-white/10 rounded-2xl p-8 text-center ">
-              ${icon}
-              <div class="name text-xl font-bold mb-2">${g.name}</div>
-              <a href="/dashboard/${g.id}" class="button bg-[#7289da] hover:bg-[#5865F2] text-white px-4 py-2 rounded-lg ">Configurer</a>
-            </div>
-          `;
-          });
+              <div class="card bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+                ${icon}
+                <div class="name text-xl font-bold mb-2">${g.name}</div>
+                ${actionButton}
+              </div>
+            `;
+          })
+        ;
       }
     </script>
     <div
