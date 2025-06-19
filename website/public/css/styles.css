@@ -20,7 +20,6 @@
     transform: translateX(0);
   }
 }
-
 .animate-slide-in-right {
   animation: slideInRight 0.7s cubic-bezier(0.4,0,0.2,1);
 }
@@ -221,6 +220,11 @@
 
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out forwards;
+}
+
+.card, .card * {
+  animation: none !important;
+  transition: none !important;
 }
 
 .menu-icon {

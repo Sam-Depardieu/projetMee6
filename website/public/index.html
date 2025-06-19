@@ -46,42 +46,6 @@
   <body
     class="bg-black text-white max-h-[400px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-red-500"
   >
-    <script>
-      fetch('/dashboard/user')
-      .then(res => {
-        if (!res.ok) throw new Error('Not logged in');
-        return res.json();
-      })
-      .then(user => {
-        localStorage.setItem('user', JSON.stringify(user));
-        showUser(user);
-      })
-      .catch(() => {
-        showUser(null);
-      });
-
-      function showUser(user) {
-        const userArea = document.getElementById('userArea');
-        if (user) {
-          userArea.innerHTML = `
-            <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
-              <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
-              <span class="font-semibold">${user.username}</span>
-              <a href="/logout" class="ml-2 text-red-400 hover:underline">Déconnexion</a>
-            </div>
-          `;
-        } else {
-          userArea.innerHTML = `
-            <a href="/login">
-              <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
-                Se connecter à Discord
-              </button>
-            </a>
-          `;
-        }
-        userArea.classList.remove('hidden');
-      }
-    </script>
     <div
       id="loader"
       class="fixed inset-0 bg-black z-50 flex items-center justify-center"
@@ -579,5 +543,41 @@
         </div>
       </div>
     </footer>
+    <script>
+      fetch('/dashboard/user')
+      .then(res => {
+        if (!res.ok) throw new Error('Not logged in');
+        return res.json();
+      })
+      .then(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        showUser(user);
+      })
+      .catch(() => {
+        showUser(null);
+      });
+
+      function showUser(user) {
+        const userArea = document.getElementById('userArea');
+        if (user) {
+          userArea.innerHTML = `
+            <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
+              <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
+              <span class="font-semibold">${user.username}</span>
+              <a href="/logout" class="ml-2 text-red-400 hover:underline">Déconnexion</a>
+            </div>
+          `;
+        } else {
+          userArea.innerHTML = `
+            <a href="/login">
+              <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
+                Se connecter à Discord
+              </button>
+            </a>
+          `;
+        }
+        userArea.classList.remove('hidden');
+      }
+    </script>
   </body>
 </html>

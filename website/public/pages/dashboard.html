@@ -55,9 +55,19 @@
       .then(user => {
         localStorage.setItem('user', JSON.stringify(user));
         showUser(user);
+        return fetch('/dashboard/guilds');
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('No guilds');
+        return res.json();
+      })
+      .then(guilds => {
+        localStorage.setItem('guilds', JSON.stringify(guilds));
+        showGuilds(guilds);
       })
       .catch(() => {
         showUser(null);
+        showGuilds([]);
       });
 
       function showUser(user) {
@@ -80,6 +90,33 @@
           `;
         }
         userArea.classList.remove('hidden');
+      }
+
+      function showGuilds(guilds) {
+        const container = document.getElementById('serverList');
+        container.innerHTML = '';
+        guilds
+          .filter(g => (g.permissions & 0x20) === 0x20)
+          .forEach(g => {
+            const initials = g.name
+              .split(' ')
+              .map(w => w[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase();
+
+            const icon = g.icon
+              ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" class="w-20 h-20 rounded-full mx-auto mb-4 animate-slide-in-right" />`
+              : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold animate-slide-in-right" style="background:#dc2626">${initials}</div>`;
+
+            container.innerHTML += `
+            <div class="card bg-white/5 border border-white/10 rounded-2xl p-8 text-center ">
+              ${icon}
+              <div class="name text-xl font-bold mb-2">${g.name}</div>
+              <a href="/dashboard/${g.id}" class="button bg-[#7289da] hover:bg-[#5865F2] text-white px-4 py-2 rounded-lg ">Configurer</a>
+            </div>
+          `;
+          });
       }
     </script>
     <div
@@ -108,22 +145,22 @@
 
             <div class="hidden md:flex gap-8">
               <a
-                href="#hero"
+                href="../index.html#hero"
                 class="text-white/70 hover:text-white transition-colors"
                 >Home</a
               >
               <a
-                href="#features"
+                href="../index.html#features"
                 class="text-white/70 hover:text-white transition-colors"
                 >Features</a
               >
               <a
-                href="#commands"
+                href="../index.html#commands"
                 class="text-white/70 hover:text-white transition-colors"
                 >Commands</a
               >
               <a
-                href="#testimonials"
+                href="../index.html#testimonials"
                 class="text-white/70 hover:text-white transition-colors"
                 >Testimonials</a
               >
@@ -191,32 +228,6 @@
           <h1 class="text-5xl font-bold text-white text-dashbord">Sélectionne un serveur</h1>
           <div class="my-8"></div>
           <div id="serverList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full"></div>
-          <script>
-            const guilds = JSON.parse(localStorage.getItem('guilds') || '[]');
-            const container = document.getElementById('serverList');
-            guilds
-              .filter(g => (g.permissions & 0x20) === 0x20)
-              .forEach(g => {
-                const initials = g.name
-                  .split(' ')
-                  .map(w => w[0])
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase();
-
-                const icon = g.icon
-                  ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" class="w-20 h-20 rounded-full mx-auto mb-4 animate-slide-in-right" />`
-                  : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-red-700 text-white text-3xl font-bold animate-slide-in-right">${initials}</div>`;
-
-                container.innerHTML += `
-                  <div class="card bg-white/5 border border-white/10 rounded-2xl p-8 text-center transition-colors feature-card">
-                    ${icon}
-                    <div class="name text-xl font-bold mb-2">${g.name}</div>
-                    <a href="/dashboard/${g.id}" class="button bg-[#7289da] hover:bg-[#5865F2] text-white px-4 py-2 rounded-lg transition-colors">Configurer</a>
-                  </div>
-                `;
-              });
-          </script>
         </div>
       </div>
     </section>

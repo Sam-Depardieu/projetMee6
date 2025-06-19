@@ -13,6 +13,11 @@ router.get('/user', (req, res) => {
   res.json(req.session.user);
 });
 
+router.get('/guilds', (req, res) => {
+  if (!req.session.guilds) return res.status(401).json({ error: 'Not logged in' });
+  res.json(req.session.guilds);
+});
+
 // Page de config du serveur choisi
 router.get('/:guildId', (req, res) => {
   if (!req.session.user) return res.redirect('/login');
