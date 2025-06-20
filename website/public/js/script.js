@@ -596,11 +596,12 @@ function showUser(user) {
             <span class="font-semibold">${user.username}</span>
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
-          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg z-50">
-            <a href="/profile" class="block px-4 py-2 hover:bg-gray-100">Profil</a>
-            <a href="/settings" class="block px-4 py-2 hover:bg-gray-100">Paramètres</a>
-            <a href="/logout" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Déconnexion</a>
+          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-black/60 text-white rounded-xl shadow-2xl ring-1 ring-white/10 backdrop-blur-sm z-50 transition-all duration-200">
+            <a href="/profile" class="block px-4 py-3 hover:bg-white/10 rounded-t-xl transition-colors"> Profil</a>
+            <a href="/settings" class="block px-4 py-3 hover:bg-white/10 transition-colors"> Paramètres</a>
+            <a href="/logout" class="block px-4 py-3 text-red-400 hover:bg-red-600 hover:text-white rounded-b-xl transition-colors"> Déconnexion</a>
           </div>
+
         </div>
       `;
       // Dropdown JS
