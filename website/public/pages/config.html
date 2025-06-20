@@ -43,7 +43,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/styles.css" />
-    <script src="js/script.js"></script>
+    <script src="../js/script.js"></script>
   </head>
   <body class="bg-black text-white min-h-screen">
     <script>
@@ -72,28 +72,6 @@
         showGuilds([]);
         document.getElementById('loader').style.display = 'none'; // <-- Ajouté ici aussi
       });
-
-      function showUser(user) {
-        const userArea = document.getElementById('userArea');
-        if (user) {
-          userArea.innerHTML = `
-            <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
-              <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
-              <span class="font-semibold">${user.username}</span>
-              <a href="/logout" class="ml-2 text-red-400 hover:underline">Déconnexion</a>
-            </div>
-          `;
-        } else {
-          userArea.innerHTML = `
-            <a href="/login">
-              <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
-                Se connecter à Discord
-              </button>
-            </a>
-          `;
-        }
-        userArea.classList.remove('hidden');
-      }
 
       function showGuilds(guilds) {
         // Filtrer les guilds où le bot est présent et où l'utilisateur est admin
@@ -128,6 +106,7 @@
       <div class="nav-blur bg-black/30 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-20">
+            <!-- Logo à gauche -->
             <div class="flex items-center gap-2">
               <img
                 src="../images/logo.png"
@@ -140,74 +119,36 @@
               >
             </div>
 
+            <!-- Menu desktop -->
             <div class="hidden md:flex gap-8">
-              <a
-                href="../index.html#hero"
-                class="text-white/70 hover:text-white transition-colors"
-                >Home</a
-              >
-              <a
-                href="../index.html#features"
-                class="text-white/70 hover:text-white transition-colors"
-                >Features</a
-              >
-              <a
-                href="../index.html#commands"
-                class="text-white/70 hover:text-white transition-colors"
-                >Commands</a
-              >
-              <a
-                href="../index.html#testimonials"
-                class="text-white/70 hover:text-white transition-colors"
-                >Testimonials</a
-              >
+              <a href="../index.html#hero" class="text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="text-white/70 hover:text-white transition-colors">Testimonials</a>
             </div>
 
+            <!-- userArea à droite -->
+            <div class="hidden md:block" id="userArea"></div>
+
+            <!-- Bouton menu mobile -->
             <div class="md:hidden">
               <button onclick="toggleMobileMenu()" class="text-white p-2" aria-label="Open mobile menu">
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    class="menu-icon"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  ></path>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
               </button>
             </div>
-
-            <a id="userArea" class="hidden md:block"></a>
           </div>
 
+          <!-- Menu mobile -->
           <div id="mobileMenu" class="hidden md:hidden">
             <div class="px-2 pt-2 pb-3 space-y-1 bg-black/50 rounded-lg mt-2">
-              <a
-                href="../index.html#hero"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Home</a
-              >
-              <a
-                href="../index.html#features"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Features</a
-              >
-              <a
-                href="../index.html#commands"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Commands</a
-              >
-              <a
-                href="../index.html#testimonials"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Testimonials</a
-              >
-              <a id="userArea" class="hidden md:block"></a>
+              <a href="../index.html#hero" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Testimonials</a>
+              <!-- userArea mobile : juste la photo -->
+              <div id="userAreaMobile" class="mt-2"></div>
             </div>
           </div>
         </div>
@@ -219,7 +160,7 @@
       <aside class="fixed top-20 left-0 w-64 h-[calc(100vh-5rem)] bg-gray-900 p-6 text-white rounded-r-lg z-40 overflow-y-auto">
         </div>
         <label for="guildSelect" class="sr-only">Select Guild</label>
-        <select id="guildSelect" class="bg-white/10 text-white px-10 py-2 rounded-lg outline-none mb-6"></select>
+        <select id="guildSelect" class="bg-white/10 text-white px-7 py-2 rounded-lg outline-none mb-6"></select>
         <h3 class="text-xl font-bold mb-6">Principales</h3>
         <ul class="space-y-4">
           <li><button data-module="welcome" class="w-full text-left hover:bg-gray-800 p-2 rounded"><i class="fa-solid fa-message"></i><span>  Arrivées et départs</span></button></li>

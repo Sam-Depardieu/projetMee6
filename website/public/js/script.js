@@ -581,3 +581,69 @@ document.addEventListener("click", (e) => {
 document.getElementById("mobileMenu")?.addEventListener("click", (e) => {
   e.stopPropagation();
 });
+
+function showUser(user) {
+  const userArea = document.getElementById('userArea');
+  const userAreaMobile = document.getElementById('userAreaMobile');
+
+  if (user) {
+    userArea.innerHTML = `
+      <div class="relative group">
+        <div id="userDropdownBtn" class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
+          <span class="font-semibold">${user.username}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg z-50">
+          <a href="/profile" class="block px-4 py-2 hover:bg-gray-100">Profil</a>
+          <a href="/settings" class="block px-4 py-2 hover:bg-gray-100">Paramètres</a>
+          <a href="/logout" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Déconnexion</a>
+        </div>
+      </div>
+    `;
+    if (userAreaMobile) {
+      userAreaMobile.innerHTML = `
+        <div class="relative group">
+          <div id="userDropdownBtn" class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
+            <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-10 h-10 rounded-full mx-auto" />
+          </div>
+          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg z-50">
+            <a href="/profile" class="block px-4 py-2 hover:bg-gray-100">Profil</a>
+            <a href="/settings" class="block px-4 py-2 hover:bg-gray-100">Paramètres</a>
+            <a href="/logout" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Déconnexion</a>
+          </div>
+        </div>
+          `;
+    }
+
+    // JS pour afficher/masquer le menu
+    const btn = document.getElementById('userDropdownBtn');
+    const menu = document.getElementById('userDropdownMenu');
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    };
+    // Fermer le menu si on clique ailleurs
+    document.addEventListener('click', () => menu.classList.add('hidden'));
+    menu.onclick = (e) => e.stopPropagation();
+  } else {
+    userArea.innerHTML = `
+      <a href="/login">
+        <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
+          Se connecter à Discord
+        </button>
+      </a>
+    `;
+    if (userAreaMobile) {
+      userAreaMobile.innerHTML = `
+        <a href="/login">
+          <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300 w-full">
+            Se connecter
+          </button>
+        </a>
+      `;
+    }
+  }
+  userArea.classList.remove('hidden');
+  if (userAreaMobile) userAreaMobile.classList.remove('hidden');
+}
