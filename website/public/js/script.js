@@ -644,6 +644,6 @@ function showUser(user) {
       `;
     }
   }
-  userArea.classList.remove('hidden');
   if (userAreaMobile) userAreaMobile.classList.remove('hidden');
+  else userArea.classList.remove('hidden');
 }
