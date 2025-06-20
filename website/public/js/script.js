@@ -586,22 +586,9 @@ function showUser(user) {
   const userArea = document.getElementById('userArea');
   const userAreaMobile = document.getElementById('userAreaMobile');
 
-  if (user) {
-    if (userAreaMobile) {
-      userAreaMobile.innerHTML = `
-        <div class="relative group">
-          <div id="userDropdownBtn" class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
-            <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-10 h-10 rounded-full mx-auto" />
-          </div>
-          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg z-50">
-            <a href="/profile" class="block px-4 py-2 hover:bg-gray-100">Profil</a>
-            <a href="/settings" class="block px-4 py-2 hover:bg-gray-100">Paramètres</a>
-            <a href="/logout" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Déconnexion</a>
-          </div>
-        </div>
-          `;
-    }
-    else{
+  // Desktop (userArea)
+  if (userArea) {
+    if (user) {
       userArea.innerHTML = `
         <div class="relative group">
           <div id="userDropdownBtn" class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
@@ -616,30 +603,16 @@ function showUser(user) {
           </div>
         </div>
       `;
-    }
-
-    // JS pour afficher/masquer le menu
-    const btn = document.getElementById('userDropdownBtn');
-    const menu = document.getElementById('userDropdownMenu');
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      menu.classList.toggle('hidden');
-    };
-    // Fermer le menu si on clique ailleurs
-    document.addEventListener('click', () => menu.classList.add('hidden'));
-    menu.onclick = (e) => e.stopPropagation();
-  } else {
-    if (userAreaMobile) {
-      userAreaMobile.innerHTML = `
-        <a href="/login">
-          <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300 w-full">
-            Se connecter
-          </button>
-        </a>
-      `;
-    }
-    else
-    {
+      // Dropdown JS
+      const btn = userArea.querySelector('#userDropdownBtn');
+      const menu = userArea.querySelector('#userDropdownMenu');
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+      };
+      document.addEventListener('click', () => menu.classList.add('hidden'));
+      menu.onclick = (e) => e.stopPropagation();
+    } else {
       userArea.innerHTML = `
         <a href="/login">
           <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
@@ -648,7 +621,24 @@ function showUser(user) {
         </a>
       `;
     }
+    userArea.classList.remove('hidden');
   }
-  if (userAreaMobile) userAreaMobile.classList.remove('hidden');
-  else userArea.classList.remove('hidden');
+
+  // Mobile (userAreaMobile)
+  if (userAreaMobile) {
+    if (user) {
+      userAreaMobile.innerHTML = `
+        <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-10 h-10 rounded-full mx-auto" />
+      `;
+    } else {
+      userAreaMobile.innerHTML = `
+        <a href="/login">
+          <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300 w-full">
+            Se connecter
+          </button>
+        </a>
+      `;
+    }
+    userAreaMobile.classList.remove('hidden');
+  }
 }
