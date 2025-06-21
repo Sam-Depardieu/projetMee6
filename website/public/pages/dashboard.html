@@ -138,86 +138,40 @@
       <div class="nav-blur bg-black/30 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-20">
-            <div class="flex items-center gap-2">
-              <img
-                src="../images/logo.png"
-                alt="MEE7 Logo"
-                class="w-10 h-10 rounded-lg"
-              />
-              <span
-                class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700"
-                >MEE7</span
-              >
-            </div>
-
-            <div class="hidden md:flex gap-8">
-              <a
-                href="../index.html#hero"
-                class="text-white/70 hover:text-white transition-colors"
-                >Home</a
-              >
-              <a
-                href="../index.html#features"
-                class="text-white/70 hover:text-white transition-colors"
-                >Features</a
-              >
-              <a
-                href="../index.html#commands"
-                class="text-white/70 hover:text-white transition-colors"
-                >Commands</a
-              >
-              <a
-                href="../index.html#testimonials"
-                class="text-white/70 hover:text-white transition-colors"
-                >Testimonials</a
-              >
-            </div>
-
+            <!-- Bouton menu mobile -->
             <div class="md:hidden">
               <button onclick="toggleMobileMenu()" class="text-white p-2" aria-label="Open mobile menu">
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    class="menu-icon"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  ></path>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
               </button>
             </div>
 
-            <a id="userArea" class="hidden md:block"></a>
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+              <img src="../images/logo.png" alt="MEE7 Logo" class="w-10 h-10 rounded-lg" />
+              <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700">MEE7</span>
+            </div>
+
+            <!-- Menu desktop -->
+            <div class="hidden md:flex gap-8">
+              <a href="../index.html#hero" class="text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="text-white/70 hover:text-white transition-colors">Testimonials</a>
+            </div>
+
+            <!-- Zone utilisateur (desktop et mobile) -->
+            <div id="userArea" class="mt-2"></div>
           </div>
 
+          <!-- Menu mobile -->
           <div id="mobileMenu" class="hidden md:hidden">
             <div class="px-2 pt-2 pb-3 space-y-1 bg-black/50 rounded-lg mt-2">
-              <a
-                href="../index.html#hero"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Home</a
-              >
-              <a
-                href="../index.html#features"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Features</a
-              >
-              <a
-                href="../index.html#commands"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Commands</a
-              >
-              <a
-                href="../index.html#testimonials"
-                class="block px-3 py-2 text-white/70 hover:text-white transition-colors"
-                >Testimonials</a
-              >
-              <a id="userArea" class="hidden md:block"></a>
+              <a href="../index.html#hero" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Testimonials</a>
             </div>
           </div>
         </div>

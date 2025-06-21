@@ -584,62 +584,70 @@ document.getElementById("mobileMenu")?.addEventListener("click", (e) => {
 
 function showUser(user) {
   const userArea = document.getElementById('userArea');
-  const userAreaMobile = document.getElementById('userAreaMobile');
 
-  // Desktop (userArea)
-  if (userArea) {
-    if (user) {
-      userArea.innerHTML = `
-        <div class="relative group">
-          <div id="userDropdownBtn" class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
-            <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
-            <span class="font-semibold">${user.username}</span>
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </div>
-          <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-black/60 text-white rounded-xl shadow-2xl ring-1 ring-white/10 backdrop-blur-sm z-50 transition-all duration-200">
-            <a href="/profile" class="block px-4 py-3 hover:bg-white/10 rounded-t-xl transition-colors"> Profil</a>
-            <a href="/settings" class="block px-4 py-3 hover:bg-white/10 transition-colors"> Paramètres</a>
-            <a href="/logout" class="block px-4 py-3 text-red-400 hover:bg-red-600 hover:text-white rounded-b-xl transition-colors"> Déconnexion</a>
-          </div>
+  if (!userArea) return;
 
+  if (user) {
+    userArea.innerHTML = `
+      <div class="relative group">
+        
+        <!-- Desktop : avatar + pseudo -->
+        <div id="userDropdownBtnDesktop" class="hidden md:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg cursor-pointer select-none">
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-8 h-8 rounded-full" />
+          <span class="font-semibold">${user.username}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
         </div>
-      `;
-      // Dropdown JS
-      const btn = userArea.querySelector('#userDropdownBtn');
-      const menu = userArea.querySelector('#userDropdownMenu');
-      btn.onclick = (e) => {
+
+        <!-- Mobile : avatar seul -->
+        <div id="userDropdownBtnMobile" class="md:hidden cursor-pointer p-1">
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-10 h-10 rounded-full" />
+        </div>
+
+        <!-- Menu dropdown partagé -->
+        <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-black/60 text-white rounded-xl shadow-2xl ring-1 ring-white/10 backdrop-blur-sm z-50 transition-all duration-200">
+          <a href="/profile" class="block px-4 py-3 hover:bg-white/10 rounded-t-xl transition-colors">Profil</a>
+          <a href="/settings" class="block px-4 py-3 hover:bg-white/10 transition-colors">Paramètres</a>
+          <a href="/logout" class="block px-4 py-3 text-red-400 hover:bg-red-600 hover:text-white rounded-b-xl transition-colors">Déconnexion</a>
+        </div>
+
+      </div>
+    `;
+
+    const menu = userArea.querySelector('#userDropdownMenu');
+
+    const btnDesktop = userArea.querySelector('#userDropdownBtnDesktop');
+    const btnMobile = userArea.querySelector('#userDropdownBtnMobile');
+
+    if (btnDesktop) {
+      btnDesktop.onclick = (e) => {
         e.stopPropagation();
         menu.classList.toggle('hidden');
       };
-      document.addEventListener('click', () => menu.classList.add('hidden'));
-      menu.onclick = (e) => e.stopPropagation();
-    } else {
-      userArea.innerHTML = `
-        <a href="/login">
-          <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
-            Se connecter à Discord
-          </button>
-        </a>
-      `;
     }
-    userArea.classList.remove('hidden');
+
+    if (btnMobile) {
+      btnMobile.onclick = (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+      };
+    }
+
+    // Fermer le menu si clic en dehors
+    document.addEventListener('click', () => menu.classList.add('hidden'));
+    menu.onclick = (e) => e.stopPropagation();
+
+  } else {
+    userArea.innerHTML = `
+      <a href="/login">
+        <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300">
+          Se connecter à Discord
+        </button>
+      </a>
+    `;
   }
 
-  // Mobile (userAreaMobile)
-  if (userAreaMobile) {
-    if (user) {
-      userAreaMobile.innerHTML = `
-        <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar" class="w-10 h-10 rounded-full mx-auto" />
-      `;
-    } else {
-      userAreaMobile.innerHTML = `
-        <a href="/login">
-          <button class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg transition-all duration-300 w-full">
-            Se connecter
-          </button>
-        </a>
-      `;
-    }
-    userAreaMobile.classList.remove('hidden');
-  }
+  userArea.classList.remove('hidden');
 }
+
