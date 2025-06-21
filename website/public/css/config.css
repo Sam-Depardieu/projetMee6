@@ -1,0 +1,157 @@
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555;
+  transition: background-color 0.3s ease;
+  border-radius: 9999px;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  transition: transform 0.3s ease;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #e11d48; /* rouge Tailwind: red-600 */
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.5);
+}
+
+#saveBar {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#saveBar.hidden {
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+#guildSelect {
+  -webkit-user-select: none;
+  user-select: none;
+  max-height: 12rem; /* limite la hauteur et ajoute un scroll */
+  overflow-y: auto;
+}
+
+#guildSelect div:hover {
+  background-color: rgba(220, 38, 38, 0.3); /* rouge transparent au survol */
+}
+
+#guildSelect div.bg-red-700 {
+  background-color: #b91c1c; /* rouge foncé quand sélectionné */
+}
+
+.choices {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  color: white !important;
+  background-color: #1f2937 !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid #e11d48 !important;
+  max-width: 300px !important;
+  position: relative !important;
+}
+
+/* Container input */
+.choices__inner {
+  background-color: #111827 !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 0.5rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+/* Dropdown list hidden by default (no !important) */
+.choices__list--dropdown {
+  background-color: #1f2937 !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid #e11d48 !important;
+  margin-top: 0.25rem !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+  box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3) !important;
+  z-index: 1000 !important;
+  display: none;
+  position: absolute !important;
+  width: 100% !important;
+}
+
+/* Show dropdown when open */
+.choices.is-open .choices__list--dropdown {
+  display: block;
+}
+
+/* Items */
+.choices__list--dropdown .choices__item {
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Hover/selected */
+.choices__list--dropdown .choices__item.is-highlighted,
+.choices__list--dropdown .choices__item:hover {
+  background-color: rgba(225, 29, 72, 0.5) !important;
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.3) !important;
+  color: white !important;
+}
+
+/* Logos */
+.choices__list--dropdown .choices__item img {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Selected item in input */
+.choices__item--selectable {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+/* Logo in selected */
+.choices__item--selectable img {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}

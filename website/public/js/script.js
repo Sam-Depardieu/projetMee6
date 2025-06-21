@@ -649,5 +649,17 @@ function showUser(user) {
   }
 
   userArea.classList.remove('hidden');
+
+  const loginBtn = document.getElementById('loginBtn');
+
+  if (loginBtn) {
+    if (user) {
+      loginBtn.href = "/dashboard";
+      loginBtn.textContent = "Vos serveurs";
+    } else {
+      loginBtn.href = "/login";
+      loginBtn.textContent = "Se connecter à Discord";
+    }
+  }
 }
 
