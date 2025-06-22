@@ -102,7 +102,6 @@ module.exports = client => {
         });
     };
 
-
     client.addGuildUser = (message, user) => {
         return new Promise((resolve, reject) => {
             client.connection.query(

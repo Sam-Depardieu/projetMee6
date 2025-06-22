@@ -73,6 +73,10 @@ module.exports = {
                     } catch (e) {
                         message.channel.send(`<@${message.author.id}> ⚠️ Attention, ${reason.toLowerCase()}`);
                     }
+                    // Appel du warn
+                    const warnCommand = require('../../commands/moderator/warn.js');
+                    // Simule les arguments comme si la commande était appelée normalement
+                    await warnCommand.run(client, message, [ `<@${message.author.id}>`, reason ]);
                 }
                 return;
             }
