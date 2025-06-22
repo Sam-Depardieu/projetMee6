@@ -36,10 +36,10 @@ client.slashCommands = new Collection();
 require('./utils/functions.js')(client);
 
 console.log('Chargement des handlers...');
-/*['CommandUtil', 'EventUtil'].forEach(handler => {
+['CommandUtil', 'EventUtil'].forEach(handler => {
     console.log(`Chargement du handler : ${handler}`);
     require(`./utils/handlers/${handler}.js`)(client);
-});*/
+});
 
 
 client.once('ready', () => {

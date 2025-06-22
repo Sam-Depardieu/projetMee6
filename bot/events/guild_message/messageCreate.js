@@ -20,6 +20,64 @@ module.exports = {
             guildData = await client.getGuild(message.guild)
         }
 
+        let guildAutoModeration = await client.getGuildAutoMod(message.guild);
+        if (!guildAutoModeration || guildAutoModeration.length === 0) {
+            await client.addGuildAutoMod(message.guild);
+            guildAutoModeration = await client.getGuildAutoMod(message.guild)
+        }
+        if (guildData[0].audoModeration) {
+            let infraction = false;
+            let reason = '';
+            // Cas 1 : liens interdits
+            if (guildAutoModeration[0].type === 'link') {
+                const linkRegex = /(https?:\/\/[^\s]+)/g;
+                const discordGifRegex = /https?:\/\/(tenor\.com|giphy\.com|media\.discordapp\.net|cdn\.discordapp\.com)/;
+                if (linkRegex.test(message.content) && !discordGifRegex.test(message.content)) {
+                    infraction = true;
+                    reason = 'Lien interdit (auto-modération)';
+                }
+            }
+            // Cas 2 : mots interdits
+            else if (guildAutoModeration[0].type === 'message') {
+                const forbiddenWords = guildAutoModeration[0].content || [];
+                const regex = new RegExp(`\\b(${forbiddenWords.join('|')})\\b`, 'i');
+                if (regex.test(message.content)) {
+                    infraction = true;
+                    reason = 'Mot interdit (auto-modération)';
+                }
+            }
+
+            if (infraction) {
+                await message.delete();
+
+                const sanction = guildAutoModeration[0].sanction;
+                if (sanction === 'ban') {
+                    await message.member.ban({ reason });
+                } else if (sanction === 'mute') {
+                    let muteRole = message.guild.roles.cache.find(r => r.name.toLowerCase().includes('mute'));
+                    if (muteRole) {
+                        await message.member.roles.add(muteRole, reason);
+                        // Retirer le mute après la durée spécifiée (pour les mots interdits)
+                        const duree = guildAutoModeration[0].duree || 60000; // durée en ms, défaut 1 min
+                        setTimeout(async () => {
+                            if (message.member.roles.cache.has(muteRole.id)) {
+                                await message.member.roles.remove(muteRole, 'Fin du mute automatique');
+                            }
+                        }, duree);
+                    } else {
+                        message.channel.send("Rôle mute introuvable.");
+                    }
+                } else if (sanction === 'warn') {
+                    try {
+                        await message.author.send(`⚠️ Attention, ${reason.toLowerCase()}`);
+                    } catch (e) {
+                        message.channel.send(`<@${message.author.id}> ⚠️ Attention, ${reason.toLowerCase()}`);
+                    }
+                }
+                return;
+            }
+        }
+
         let prefix = guildData[0].prefix;
         
         const args = message.content.slice(prefix.length).trim().split(/ +/g);

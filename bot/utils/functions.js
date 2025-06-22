@@ -16,6 +16,70 @@ module.exports = client => {
         });
     };
 
+    client.getGuildUser = user => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guildUsers WHERE idUser = ?',
+                [user.id],
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+    client.getAutoMod = (guild) => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guildAutoModeration WHERE idGuild = ?',
+                [String(guild.id)], // Assurez-vous que l'ID de la guilde est en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+        client.getGuilds = () => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guilds',
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+    client.getGuild = guild => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guilds WHERE idGuild = ?',
+                [guild.id],
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    };
+
+    client.getGuildLevelSystem = guild => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'SELECT * FROM guildLevelSystem WHERE idGuild = ?',
+                [String(guild.id)], // ID en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    }
+
     client.addUser = (message, user) => {
         return new Promise((resolve, reject) => {
             client.connection.query(
@@ -38,18 +102,6 @@ module.exports = client => {
         });
     };
 
-    client.getGuildUser = user => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'SELECT * FROM guildUsers WHERE idUser = ?',
-                [user.id],
-                (err, results) => {
-                    if (err) return reject(err);
-                    resolve(results);
-                }
-            );
-        });
-    };
 
     client.addGuildUser = (message, user) => {
         return new Promise((resolve, reject) => {
@@ -97,44 +149,6 @@ module.exports = client => {
             throw error;
         }
     };
-
-    client.getGuilds = () => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'SELECT * FROM guilds',
-                (err, results) => {
-                    if (err) return reject(err);
-                    resolve(results);
-                }
-            );
-        });
-    };
-
-    client.getGuild = guild => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'SELECT * FROM guilds WHERE idGuild = ?',
-                [guild.id],
-                (err, results) => {
-                    if (err) return reject(err);
-                    resolve(results);
-                }
-            );
-        });
-    };
-
-    client.getGuildLevelSystem = guild => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'SELECT * FROM guildLevelSystem WHERE idGuild = ?',
-                [String(guild.id)], // ID en string
-                (err, results) => {
-                    if (err) return reject(err);
-                    resolve(results);
-                }
-            );
-        });
-    }
 
     client.createGuildLevelSystem = guild => {
         return new Promise((resolve, reject) => {
