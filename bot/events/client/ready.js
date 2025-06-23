@@ -19,6 +19,8 @@ module.exports = {
             cmds.commands.set(client.slashCommands.map(cmd => cmd));
         }
 
+        client.user.setActivity("https://bot.sa-it.fr", { type: 4 });
+
         //client.application.commands.set(client.slashCommands.map(cmd => cmd))                       // global
         
     }
