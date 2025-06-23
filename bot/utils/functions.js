@@ -147,6 +147,26 @@ module.exports = client => {
         }).catch(console.error);
     }
 
+    client.removeGuild = guild => {
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'DELETE FROM guilds WHERE idGuild = ?',
+                [String(guild.id)], // ID en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Guild ${guild.name} supprimé de la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        }).then(() => {
+            // Optionnel : retirer les commandes si besoin
+            const cmds = client.guilds.cache.get(String(guild.id));
+            if (cmds && cmds.commands) {
+                cmds.commands.set([]);
+            }
+        }).catch(console.error);
+    }
+
     client.updateGuild = (guild, parameter, value) => {
         if (!['nameGuild', 'memberCount', 'xpSystem', 'logsSystem', 'prefix'].includes(parameter)) {
             return Promise.reject(new Error('Paramètre de mise à jour invalide.'));
