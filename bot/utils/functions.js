@@ -293,55 +293,75 @@ module.exports = client => {
         });
     }
 
-    client.updateXp = async (message, xp, difficulty, guild) => {
-        const user = message.author
+    client.computeXpGain = async (user, xp, guild) => {
         let memberSettings = await client.getGuildUser(user);
         let guildSettings = await client.getGuild(guild);
         let guildLevelSettings = await client.getGuildLevelSystem(guild);
 
         let xpFinal = xp * (memberSettings.boost || 1) * (guildSettings.boost || 1);
-        let xpNow = (memberSettings.exp || 0) + xpFinal;
-        let xpTotal = memberSettings.expTotal || 0;
+        let difficulty = guildLevelSettings.length > 0 ? guildLevelSettings[0].difficulty : 1;
+        let base = 50;
+        let courbe = 1.2;
 
-        let nextLevel = memberSettings.nextExpReq || 100;
-        let level = memberSettings.lvl || 1;
-        let levelsGained = 0;
+        // Appelle updateXp avec l'xpFinal déjà calculé
+        return await client.updateXp(user, xpFinal, guild, {
+            memberSettings,
+            guildSettings,
+            guildLevelSettings,
+            difficulty,
+            base,
+            courbe
+        });
+    };
 
-        // Formule lissée : XP requis = base * (level^courbe) * difficulté
-        // base = 50, courbe = 1.2 (ajuste à ta convenance)
-        const base = 50;
-        const courbe = 1.2;
-
-        while (xpNow >= nextLevel) {
-            level++;
-            levelsGained++;
-            xpNow -= nextLevel;
-            nextLevel = Math.floor(base * Math.pow(level, courbe) * difficulty);
-            xpTotal += nextLevel;
+    client.updateXp = async (user, xpFinal, guild, params = null) => {
+        let memberSettings, guildSettings, guildLevelSettings, difficulty, base, courbe;
+        if (params) {
+            ({ memberSettings, guildSettings, guildLevelSettings, difficulty, base, courbe } = params);
+        } else {
+            memberSettings = await client.getGuildUser(user);
+            guildSettings = await client.getGuild(guild);
+            guildLevelSettings = await client.getGuildLevelSystem(guild);
+            difficulty = guildLevelSettings.length > 0 ? guildLevelSettings[0].difficulty : 1;
+            base = 50;
+            courbe = 1.2;
         }
 
-        xpTotal += xpNow;
+        let xpNow = (memberSettings[0].xp || 0) + xpFinal;
+        let xpTotal = memberSettings[0].xpTotal || 0;
+        let nextLevel = memberSettings[0].nextXpReq || 100;
+        let level = memberSettings[0].level || 1;
+        let levelsGained = 0;
 
-        // Mise à jour des données de l'utilisateur
-        await client.updateUser(user, message.guild, {
+        while (xpNow >= nextLevel) {
+            xpNow -= nextLevel;
+            level++;
+            levelsGained++;
+            nextLevel = Math.floor(base * Math.pow(level, courbe) * difficulty);
+        }
+
+        xpTotal += xpFinal;
+
+        await client.updateUser(user, guild, {
             level: level,
             xp: xpNow,
             xpTotal: xpTotal,
             nextXpReq: nextLevel
         });
 
-        memberSettings = await client.getGuildUser(user);
+        let updatedMemberSettings = await client.getGuildUser(user);
 
-        if(guildLevelSettings.length > 0) {
+        // Gestion des rôles liés aux niveaux
+        if (guildLevelSettings.length > 0) {
             let xpLevel = await client.getLevelRewards(guild, level);
-            if(xpLevel.length > 0) {
+            if (xpLevel.length > 0) {
                 const role = guild.roles.cache.get(xpLevel[0].roleId);
-                if (role && !memberSettings.roles.includes(role.id)) {
-                    if(guildLevelSettings[0].roleUnique === true || guildLevelSettings[0].roleUnique === 1) {
+                if (role && !updatedMemberSettings.roles.includes(role.id)) {
+                    if (guildLevelSettings[0].roleUnique === true || guildLevelSettings[0].roleUnique === 1) {
                         const roles = await client.getGuildLevelRewards(guild);
                         for (const r of roles) {
                             const existingRole = guild.roles.cache.get(r.roleId);
-                            if (existingRole && memberSettings.roles.includes(existingRole.id)) {
+                            if (existingRole && updatedMemberSettings.roles.includes(existingRole.id)) {
                                 const member = guild.members.cache.get(user.id);
                                 if (member) {
                                     await member.roles.remove(existingRole);
@@ -349,26 +369,33 @@ module.exports = client => {
                             }
                         }
                     }
-                    else await member.roles.add(role);
-                    let embed = new MessageEmbed().setColor('#00FF00')
+                    const member = guild.members.cache.get(user.id);
+                    if (member) await member.roles.add(role);
+
+                    let embed = new MessageEmbed().setColor('#00FF00');
                     let message = `Félicitations ${user.username}, vous avez atteint le niveau ${level} et avez reçu le rôle ${role.name} !`;
-                    if( xpLevel[0].rewardMessage) {
+
+                    if (xpLevel[0].rewardMessage) {
                         message = await client.formatMessage(xpLevel[0].rewardMessage, { user, guild, level });
+                    } else if (guildLevelSettings[0].messageLevelUp) {
+                        message = await client.formatMessage(guildLevelSettings[0].messageLevelUp, { user, guild, level });
                     }
-                    else if (guildLevelSettings.messageLevelUp) {
-                        message = await client.formatMessage(guildLevelSettings.messageLevelUp, { user, guild, level });
-                    }
+
                     embed.setDescription(message);
-                    if (guildLevelSettings.channelId) {
+
+                    if (guildLevelSettings[0].channelId) {
                         guild.channels.cache.get(guildSettings.channelLvl)?.send({ embeds: [embed] });
+                    } else {
+                        // message.channel.send({ embeds: [embed] });
                     }
-                    else message.channel.send({ embeds: [embed] });
                 }
             }
         }
 
-        return [memberSettings, xpFinal];
+        return [updatedMemberSettings, xpFinal];
     };
+
+
 
     client.calculateXp = (level, difficulty) => {
         // Formule lissée : XP requis = base * (level^courbe) * difficulté

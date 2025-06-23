@@ -1,3 +1,5 @@
+const { MessageFlags } = require('discord.js');
+
 module.exports = {
     name: 'config',
     description: 'Configurez au mieux le serveur!',
@@ -148,7 +150,7 @@ module.exports = {
             const prefix = interaction.options.getString('prefix');
             
             if (prefix.length > 5) {
-                return interaction.reply({ content: 'Le prefix ne peut pas dépasser 10 caractères.', ephemeral: true });
+                return interaction.reply({ content: 'Le prefix ne peut pas dépasser 10 caractères.', ephemeral: MessageFlags.Ephemeral });
             }
             else
             {
@@ -158,7 +160,7 @@ module.exports = {
         } else if (interaction.options.getSubcommand() === 'image') {
             const attachment = interaction.options.getAttachment('fichier');
             if (!attachment || !attachment.contentType.startsWith('image/')) {
-                return interaction.reply({ content: "Merci de fournir un fichier image valide.", ephemeral: true });
+                return interaction.reply({ content: "Merci de fournir un fichier image valide.", ephemeral: MessageFlags.Ephemeral });
             }
             // Enregistre l'image dans un dossier spécifique
             const fileName = `guild_${interaction.guild.id}_${Date.now()}.${attachment.url.split('.').pop()}`;
@@ -166,7 +168,7 @@ module.exports = {
                 await client.saveImage(attachment.url, fileName);
                 await interaction.reply(`Image personnalisée enregistrée pour ce serveur !`);
             } catch (err) {
-                await interaction.reply({ content: "Erreur lors de l'enregistrement de l'image.", ephemeral: true });
+                await interaction.reply({ content: "Erreur lors de l'enregistrement de l'image.", ephemeral: MessageFlags.Ephemeral });
             }
         }
     },

@@ -94,7 +94,6 @@ module.exports = {
             const miniSize = message.content.length >= levelSystem[0].minimumSize || 10;
             const xpMinWin = levelSystem[0].xpWinMin;
             const xpMaxWin = levelSystem[0].xpWinMax;
-            const difficulty = levelSystem[0].difficulty;
             const cooldown = levelSystem[0].cooldown;
             const boost = levelSystem[0].boost;
             const personalBoost = userData.boost || 1;
@@ -110,7 +109,7 @@ module.exports = {
                 }, cooldown * 1000);
                 prec = message.author.id;
 
-                await client.updateXp(message, xpToAdd, difficulty, message.guild)
+                await client.computeXpGain(message.author, xpToAdd, message.guild)
             };
         }
         

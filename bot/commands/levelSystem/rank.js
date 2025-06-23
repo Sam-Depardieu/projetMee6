@@ -29,7 +29,7 @@ module.exports = {
         if (!guildLevelSystem || guildLevelSystem.length === 0) {
             return interaction.reply({
                 content: 'Le système de niveau n\'est pas activé sur ce serveur.',
-                ephemeral: true
+                ephemeral: MessageFlags.Ephemeral
             });
         }
 
@@ -76,7 +76,7 @@ module.exports = {
 
             await interaction.editReply({
                 content: 'Une erreur est survenue lors de la génération de votre carte de rang.',
-                ephemeral: true
+                ephemeral: MessageFlags.Ephemeral
             });
         }
     }

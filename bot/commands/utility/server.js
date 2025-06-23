@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { message } = require('./ping');
+const { MessageFlags } = require('discord.js');
 
 module.exports = {
 	name: 'server',
@@ -14,7 +13,7 @@ module.exports = {
 			content: this.message
 				.replace('{guild.name}', interaction.guild.name)
 				.replace('{guild.memberCount}', interaction.guild.memberCount),
-			ephemeral: true, // Makes the response visible only to the user who invoked the command
+			ephemeral: MessageFlags.Ephemeral, // Makes the response visible only to the user who invoked the command
 		});
 	},
 };

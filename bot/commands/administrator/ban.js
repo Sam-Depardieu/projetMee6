@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageFlags } = require('discord.js');
 
 module.exports = {
   name: 'ban',

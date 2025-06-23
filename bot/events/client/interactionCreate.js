@@ -9,13 +9,13 @@ module.exports = {
             if (!interaction.member.permissions.has([cmd.permissions])) 
                 return interaction.reply({ 
                     content: `Vous n'avez pas la/les permission(s) requise(s) (\`${cmd.permissions.join(', ')}\`) pour taper cette commande!`, 
-                    ephemeral: true 
+                    ephemeral: MessageFlags.Ephemeral 
                 });
 
             if (cmd.slashAvailable === false)
                 return interaction.reply({ 
                     content: 'Cette commande n\'est pas disponible en slash command!', 
-                    ephemeral: true 
+                    ephemeral: MessageFlags.Ephemeral 
                 });
 
             // Remplacement de runSlash par execute

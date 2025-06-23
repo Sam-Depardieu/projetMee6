@@ -46,14 +46,14 @@ client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-process.on('exit', code => { console.log(clc.red(`Le processus s'est arrêté avec le code: ${code}!`)) });
+/*process.on('exit', code => { console.log(clc.red(`Le processus s'est arrêté avec le code: ${code}!`)) });
 
 process.on('uncaughtException', (err, origin) => { console.log(clc.red(`UNCAUGHT_EXCEPTION: ${err}`, `Origine: ${origin}`)) });
 
 process.on('unhandledRejection', (reason, promise) =>  { console.log(clc.red(`UNHANDLED_REJECTION: ${reason}\n-----\n`, promise)) });
 
 process.on('warning', (...args) => console.log(clc.red(...args)));
-
+*/
 
 client.login(process.env.TOKEN);
 
