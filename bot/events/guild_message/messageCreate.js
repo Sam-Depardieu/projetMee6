@@ -19,13 +19,9 @@ module.exports = {
             await client.addGuild(message.guild);
             guildData = await client.getGuild(message.guild)
         }
-
-        let guildAutoModeration = await client.getGuildAutoMod(message.guild);
-        if (!guildAutoModeration || guildAutoModeration.length === 0) {
-            await client.addGuildAutoMod(message.guild);
-            guildAutoModeration = await client.getGuildAutoMod(message.guild)
-        }
+        
         if (guildData[0].audoModeration) {
+            let guildAutoModeration = await client.getAutoMod(message.guild);
             let infraction = false;
             let reason = '';
             // Cas 1 : liens interdits
