@@ -77,7 +77,7 @@
       });
 
       function addBot(guildId) {
-        const redirect = encodeURIComponent("https://sa-it.fr/callback");
+        const redirect = encodeURIComponent("https://bot.sa-it.fr/callback");
         const url = `https://discord.com/oauth2/authorize?client_id=1371452942539948133&scope=bot+applications.commands&permissions=8&guild_id=${guildId}&redirect_uri=${redirect}&response_type=code&state=${guildId}`;
         window.open(url, "_blank"); // Ouvre dans un nouvel onglet
       }
@@ -109,7 +109,7 @@
               : `<div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold animate-slide-in-right" style="background:#dc2626">${initials}</div>`;
 
             // Si le bot est déjà sur le serveur, bouton "Configurer", sinon bouton "Ajouter le bot"
-            const redirectUri = encodeURIComponent("https://sa-it.fr/dashboard");
+            const redirectUri = encodeURIComponent("https://bot.sa-it.fr/dashboard");
             const clientId = "1371452942539948133";
             const actionButton = g.hasBot
               ? `<a href="/dashboard/${g.id}" class="button bg-[#7289da] hover:bg-[#5865F2] text-white px-4 py-2 rounded-lg">Configurer</a>`

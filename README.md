@@ -4,7 +4,7 @@ Ce projet est un site web sécurisé permettant aux utilisateurs de se connecter
 
 ## 📦 Prérequis
 
-- Un nom de domaine pointant vers ton serveur (ex : `sa-it.fr`)
+- Un nom de domaine pointant vers ton serveur (ex : `bot.sa-it.fr`)
 - Un serveur Ubuntu avec :
   - Node.js + npm
   - Nginx
@@ -32,7 +32,7 @@ Crée un fichier `.env` :
 ```ini
 CLIENT_ID=TON_CLIENT_ID_DISCORD
 CLIENT_SECRET=TON_SECRET_DISCORD
-REDIRECT_URI=https://sa-it.fr/callback
+REDIRECT_URI=https://bot.sa-it.fr/callback
 ```
 
 > ⚠️ L’URL de redirection **doit correspondre** à celle enregistrée dans le portail Discord.
@@ -65,13 +65,13 @@ pm2 start start.js --name mee8
 
 ### 5. Configurer Nginx
 
-Crée ou modifie le fichier `/etc/nginx/sites-available/sa-it.fr` :
+Crée ou modifie le fichier `/etc/nginx/sites-available/bot.sa-it.fr` :
 
 ```nginx
 # HTTP (port 80) - redirection HTTPS + Certbot
 server {
     listen 80;
-    server_name sa-it.fr www.sa-it.fr;
+    server_name bot.sa-it.fr www.bot.sa-it.fr;
 
     location /.well-known/acme-challenge/ {
         root /home/sam/projetMee6/website/public/;
@@ -86,10 +86,10 @@ server {
 # HTTPS (port 443)
 server {
     listen 443 ssl http2;
-    server_name sa-it.fr www.sa-it.fr;
+    server_name bot.sa-it.fr www.bot.sa-it.fr;
 
-    ssl_certificate /home/sam/projetMee6/certbot/conf/live/sa-it.fr/fullchain.pem;
-    ssl_certificate_key /home/sam/projetMee6/certbot/conf/live/sa-it.fr/privkey.pem;
+    ssl_certificate /home/sam/projetMee6/certbot/conf/live/bot.sa-it.fr/fullchain.pem;
+    ssl_certificate_key /home/sam/projetMee6/certbot/conf/live/bot.sa-it.fr/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
@@ -110,7 +110,7 @@ server {
 Puis activer et recharger :
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/sa-it.fr /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/bot.sa-it.fr /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -120,7 +120,7 @@ sudo systemctl reload nginx
 ### 6. Générer le certificat SSL
 
 ```bash
-sudo certbot certonly --webroot -w /home/sam/projetMee6/website/public -d sa-it.fr -d www.sa-it.fr
+sudo certbot certonly --webroot -w /home/sam/projetMee6/website/public -d bot.sa-it.fr -d www.bot.sa-it.fr
 ```
 
 > Renouvellement automatique :  
@@ -145,7 +145,7 @@ sudo certbot renew --dry-run
 
 Accède à ton site :
 ```
-https://sa-it.fr
+https://bot.sa-it.fr
 ```
 
 Clique sur **Se connecter avec Discord**, puis :
