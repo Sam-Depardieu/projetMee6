@@ -409,6 +409,44 @@ module.exports = client => {
         return null;
     }
 
+    client.getClassement = async (user, guild) => {
+        try {
+            const emote = [
+                "🥇", "🥈", "🥉", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"
+            ];
+
+            // Récupère les 10 meilleurs utilisateurs du serveur (par lvl puis exp)
+            const topUsers = await new Promise((resolve, reject) => {
+                client.connection.query(
+                    'SELECT * FROM guildUsers WHERE idGuild = ? ORDER BY lvl DESC, exp DESC LIMIT 10',
+                    [String(guild.id)],
+                    (err, results) => {
+                        if (err) return reject(err);
+                        resolve(results);
+                    }
+                );
+            });
+
+            const rank = await client.getUserRank(user, guild); // user = message.author
+
+            let embed = new MessageEmbed()
+                .setTitle("Top 10 des membres du serveur :")
+                .setFooter({ text: `Vous êtes top ${rank+1}.`, iconURL: user.displayAvatarURL() }); // optionnel
+
+            topUsers.forEach((user, index) => {
+                embed.addFields({
+                    name: `${emote[index]} - ${user.pseudo || user.username || user.idUser}`,
+                    value: `\`\`=>\`\` Lvl: ${user.lvl} | Exp: ${user.exp}`
+                });
+            });
+
+            return embed;
+        } catch (error) {
+            console.error('Erreur lors de la recherche des utilisateurs:', error);
+            return null;
+        }
+    };
+
     client.formatMessage = (template, context) => {
         return template.replace(/{([\w.]+)}/g, (match, key) => {
             const parts = key.split('.');
