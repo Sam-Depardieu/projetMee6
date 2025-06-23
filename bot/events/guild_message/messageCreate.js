@@ -8,10 +8,10 @@ module.exports = {
 
         if (message.author.bot) return;
 
-        let userData = await client.getUser(message.author);
+        let userData = await client.getGuildUser(message.author);
         if (!userData || userData.length === 0) {
-            await client.addUser(message, message.author);
-            userData = await client.getUser(message.author)
+            await client.addGuildUser(message, message.author);
+            userData = await client.getGuildUser(message.author)
         }
 
         let guildData = await client.getGuild(message.guild);
@@ -86,21 +86,14 @@ module.exports = {
         if(user && message.content.trim() === `<@${client.user.id}>`){
             message.channel.send("Mon prefix sur ce serveur est -> \`\`"+ prefix+"\`\`");
         }
-        
-        const linkRegex = /(https?:\/\/[^\s]+)/g;
-        const discordGifRegex = /https?:\/\/(tenor\.com|giphy\.com|media\.discordapp\.net|cdn\.discordapp\.com)/;
-        if (linkRegex.test(message.content) && !discordGifRegex.test(message.content)) {
-            await message.delete();
-            return;
-        }
 
         //système de niveau
         const levelSystem = await client.getGuildLevelSystem(message.guild);
         if( guildData[0].xpSystem && levelSystem.length > 0)
         {
             const miniSize = message.content.length >= levelSystem[0].minimumSize || 10;
-            const xpMinWin = levelSystem[0].xpMinWin;
-            const xpMaxWin = levelSystem[0].xpMaxWin;
+            const xpMinWin = levelSystem[0].xpWinMin;
+            const xpMaxWin = levelSystem[0].xpWinMax;
             const difficulty = levelSystem[0].difficulty;
             const cooldown = levelSystem[0].cooldown;
             const boost = levelSystem[0].boost;

@@ -3,19 +3,6 @@ const fs = require('fs');
 const sql = require('mysql2');
 
 module.exports = client => {
-    client.getUser = user => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'SELECT * FROM users WHERE idUser = ?',
-                [user.id],
-                (err, results) => {
-                    if (err) return reject(err);
-                    resolve(results);
-                }
-            );
-        });
-    };
-
     client.getGuildUser = user => {
         return new Promise((resolve, reject) => {
             client.connection.query(
@@ -42,7 +29,7 @@ module.exports = client => {
         });
     };
 
-        client.getGuilds = () => {
+    client.getGuilds = () => {
         return new Promise((resolve, reject) => {
             client.connection.query(
                 'SELECT * FROM guilds',
@@ -80,33 +67,11 @@ module.exports = client => {
         });
     }
 
-    client.addUser = (message, user) => {
-        return new Promise((resolve, reject) => {
-            client.connection.query(
-                'INSERT INTO users (idUser, username) VALUES (?, ?)',
-                [user.id, user.username], // Assurez-vous que l'ID de la guilde est en string
-                (err, results) => {
-                    if (err) return reject(err);
-                    console.log(`Utilisateur ${user.username}(${user.id}) ajouté à la base de donnée.`);
-                    // Déplacez la logique asynchrone ici
-                    client.getGuildUser(message, user)
-                        .then(guildUsers => {
-                            if (guildUsers.length === 0) {
-                                client.addGuildUser(message, user).catch(console.error);
-                            }
-                            resolve(results);
-                        })
-                        .catch(reject);
-                }
-            );
-        });
-    };
-
     client.addGuildUser = (message, user) => {
         return new Promise((resolve, reject) => {
             client.connection.query(
-                'INSERT INTO guildUsers (idUser, lastMessageId, idGuild) VALUES (?, ?, ?)',
-                [user.id, message.id, String(message.guild.id)], // Assurez-vous que l'ID de la guilde est en string
+                'INSERT INTO guildUsers (idUser, username, pseudo, lastMessageId, idGuild) VALUES (?, ?, ?, ?, ?)',
+                [user.id, user.username, user.displayName, message.id, String(message.guild.id)], // Assurez-vous que l'ID de la guilde est en string
                 (err, results) => {
                     if (err) return reject(err);
                     console.log(`Utilisateur guild ${user.username}(${user.id}) ajouté à la base de donnée.`);
@@ -138,7 +103,7 @@ module.exports = client => {
                             console.error("Erreur lors de la mise à jour de l'utilisateur :", err);
                             return reject(err);
                         }
-                        console.log(`Utilisateur ${user.username} mis à jour dans la base de donnée.`);
+                        //console.log(`Utilisateur ${user.username} mis à jour dans la base de donnée.`);
                         resolve(results);
                     }
                 );
@@ -330,7 +295,7 @@ module.exports = client => {
 
     client.updateXp = async (message, xp, difficulty, guild) => {
         const user = message.author
-        let memberSettings = await client.getUser(user);
+        let memberSettings = await client.getGuildUser(user);
         let guildSettings = await client.getGuild(guild);
         let guildLevelSettings = await client.getGuildLevelSystem(guild);
 
@@ -358,15 +323,14 @@ module.exports = client => {
         xpTotal += xpNow;
 
         // Mise à jour des données de l'utilisateur
-        await client.updateUser(user, {
-            lvl: level,
-            exp: xpNow,
-            expTotal: xpTotal,
-            nextExpReq: nextLevel,
-            expTotalToday: (memberSettings.expTotalToday || 0) + xp
+        await client.updateUser(user, message.guild, {
+            level: level,
+            xp: xpNow,
+            xpTotal: xpTotal,
+            nextXpReq: nextLevel
         });
 
-        memberSettings = await client.getUser(user);
+        memberSettings = await client.getGuildUser(user);
 
         if(guildLevelSettings.length > 0) {
             let xpLevel = await client.getLevelRewards(guild, level);
@@ -418,7 +382,7 @@ module.exports = client => {
         const users = await client.getGuilds();
         const userRanks = [];
         for (const user of users) {
-            const userData = await client.getUser(user.idUser);
+            const userData = await client.getGuildUser(user.idUser);
             if (userData.length > 0 && userData[0].idGuild === String(guild.id)) {
                 userRanks.push({
                     id: user.idUser,
@@ -432,7 +396,7 @@ module.exports = client => {
     };
 
     client.getUserRank = async (user, guild) => {
-        const userData = await client.getUser(user);
+        const userData = await client.getGuildUser(user);
         if (userData.length > 0 && userData[0].idGuild === String(guild.id)) {
             const userRank = {
                 id: user.id,

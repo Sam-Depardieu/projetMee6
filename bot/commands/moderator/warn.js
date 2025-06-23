@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 const warns = require('./warns.json');
 
@@ -24,16 +24,15 @@ module.exports = {
 
         let user = message.mentions.users.first();
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`${user.username} (${user.id})`, user.displayAvatarURL())
             .setColor("#287db5")
             .setDescription(`**Action**: warn\n**Raison**: ${reason}`)
             .setTimestamp()
             .setFooter({text: message.author.username, value: message.author.displayAvatarURL()});
 
-        fs.writeFileSync('./Commandes/Moderation/warns.json', JSON.stringify(warns));
         if(client.getGuild(message.guild).logChannelID != undefined) client.channels.cache.get(client.getGuild(message.guild).logChannelID).send(embed);
-        message.channel.send(member + " a été warn pour " + reason + " :white_check_mark:");
+        message.channel.send(`<@${member.id}> a été warn pour ` + reason + " :white_check_mark:");
 
         // Ajout : incrémenter sanctions dans la BDD
         try {
