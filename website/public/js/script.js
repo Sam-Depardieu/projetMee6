@@ -608,7 +608,7 @@ function showUser(user) {
         <!-- Menu dropdown partagé -->
         <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-black/60 text-white rounded-xl shadow-2xl ring-1 ring-white/10 backdrop-blur-sm z-50 transition-all duration-200">
           <a href="/profile" class="block px-4 py-3 hover:bg-white/10 rounded-t-xl transition-colors">Profil</a>
-          <a href="/settings" class="block px-4 py-3 hover:bg-white/10 transition-colors">Paramètres</a>
+          <a href="/dashboard" class="block px-4 py-3 hover:bg-white/10 transition-colors">Vos serveurs</a>
           <a href="/logout" class="block px-4 py-3 text-red-400 hover:bg-red-600 hover:text-white rounded-b-xl transition-colors">Déconnexion</a>
         </div>
 

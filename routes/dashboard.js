@@ -29,10 +29,44 @@ router.get('/guilds', (req, res) => {
   res.json(userGuilds);
 });
 
+router.get('/guilds/:guildId/roles', async (req, res) => {
+
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+
+  const guildId = req.params.guildId;
+  console.log('Guild demandée :', guildId);
+
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) {
+    return res.status(404).json({ error: 'Guild not found' });
+  }
+
+  const userGuild = req.session.guilds?.find(g => g.id === guildId);
+  if (!userGuild) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const roles = guild.roles.cache
+    .filter(role => role.name !== '@everyone')
+    .map(role => ({
+      id: role.id,
+      name: role.name,
+      managed: role.managed
+    }));
+
+  console.log('✅ Rôles retournés :', roles.length);
+  console.log('✅ Rôles retournés :', roles.map(role => role.name));
+  res.json(roles);
+});
+
+
 // Page de config du serveur choisi
 router.get('/:guildId', (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   res.sendFile(path.join(__dirname, '../website/public/pages/config.html'));
 });
+
 
 module.exports = router;
