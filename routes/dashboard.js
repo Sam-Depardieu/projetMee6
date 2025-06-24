@@ -36,7 +36,6 @@ router.get('/guilds/:guildId/roles', async (req, res) => {
   }
 
   const guildId = req.params.guildId;
-  console.log('Guild demandée :', guildId);
 
   const guild = client.guilds.cache.get(guildId);
   if (!guild) {
@@ -56,8 +55,6 @@ router.get('/guilds/:guildId/roles', async (req, res) => {
       managed: role.managed
     }));
 
-  console.log('✅ Rôles retournés :', roles.length);
-  console.log('✅ Rôles retournés :', roles.map(role => role.name));
   res.json(roles);
 });
 

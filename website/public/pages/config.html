@@ -225,9 +225,6 @@
 
       }
 
-      
-
-
     </script>
     <div
       id="loader"
@@ -339,11 +336,21 @@
               </div>
               <div>
                 <label class="block mb-1">Rôles d'arrivée</label>
-                <div class="flex gap-2">
-                  <select id="welcomeRoleSelect" class="bg-gray-800 p-2 rounded flex-1 text-white" title="Sélectionner un rôle de bienvenue"></select>
-                  <button type="button" id="addWelcomeRole" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-white font-bold text-lg">+</button>
+                <div id="welcomeRoleList" class="relative inline-block w-full bg-gray-800 p-2 rounded h-13">
+                  <ul id="selectedRoles" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap">
+                    <!-- Rôles sélectionnés seront injectés ici -->
+                  </ul>
+
+                  <!-- Dropdown des rôles -->
+                  <div id="roleDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
+                    <ul id="roleOptions" class="max-h-60 overflow-y-auto"></ul>
+                  </div>
+
+                  <!-- Bouton + -->
+                  <button id="addWelcomeRole" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
+                    +
+                  </button>
                 </div>
-                <div id="welcomeRoleList" class="flex flex-wrap gap-2 mt-2"></div>
               </div>
               <div>
                 <label class="inline-flex items-center gap-2">
@@ -597,9 +604,22 @@
         }
       });
 
-      document.getElementById('addWelcomeRole').addEventListener('click', async () => {
+      const addBtn = document.getElementById('addWelcomeRole');
+      const dropdown = document.getElementById('roleDropdown');
+      const roleOptions = document.getElementById('roleOptions');
+      const selectedRoles = document.getElementById('selectedRoles');
+      let allRoles = []; // stocke les rôles récupérés
+
+      // Affiche ou cache le dropdown
+      addBtn.addEventListener('click', async () => {
         const guildId = localStorage.getItem('activeGuildId');
-        if (!guildId) return alert("Sélectionnez un serveur d'abord.");
+        if (!guildId) return alert("Veuillez d'abord sélectionner un serveur.");
+
+        // Toggle dropdown
+        dropdown.classList.toggle('hidden');
+
+        // Si déjà chargé, pas besoin de refetch
+        if (allRoles.length > 0) return;
 
         try {
           const res = await fetch(`/dashboard/guilds/${guildId}/roles`);
@@ -608,21 +628,76 @@
             return alert(`Erreur : ${error}`);
           }
 
-          const roles = await res.json();
-          const select = document.getElementById('welcomeRoleSelect');
-          select.innerHTML = ''; // Vide la liste avant de remplir
+          allRoles = await res.json();
+          roleOptions.innerHTML = '';
 
-          roles.forEach(role => {
-            const option = document.createElement('option');
-            option.value = role.id;
-            option.textContent = role.name + (role.managed ? ' (géré)' : '');
-            select.appendChild(option);
+          allRoles.forEach(role => {
+            const li = document.createElement('li');
+            li.textContent = role.name + (role.managed ? ' (géré)' : '');
+            li.className = "px-4 py-2 hover:bg-white/10 cursor-pointer transition";
+            li.dataset.roleId = role.id;
+
+            li.addEventListener('click', () => {
+              ajouterRole(role);
+              dropdown.classList.add('hidden');
+            });
+
+            roleOptions.appendChild(li);
           });
 
         } catch (err) {
           console.error(err);
           alert("Erreur lors du chargement des rôles.");
         }
+      });
+
+      function updateSelectPrompt() {
+        const selectedRoles = document.getElementById('selectedRoles');
+        if (!selectedRoles) return;
+
+        // Supprime les anciens prompts
+        const oldPrompt = selectedRoles.querySelector('.select-role-placeholder');
+        if (oldPrompt) oldPrompt.remove();
+
+        const hasRoles = selectedRoles.querySelectorAll('[data-role-id]').length > 0;
+
+        if (!hasRoles) {
+          const li = document.createElement('li');
+          li.className = 'text-gray-400 select-role-placeholder';
+          li.textContent = 'Sélectionner un rôle';
+          selectedRoles.appendChild(li);
+        }
+      }
+
+      // Fonction d’ajout de rôle dans la liste
+      function ajouterRole(role) {
+        const selectedRoles = document.getElementById('selectedRoles');
+        if (!selectedRoles) return;
+
+        // Ne rien faire si déjà présent
+        if (selectedRoles.querySelector(`[data-role-id="${role.id}"]`)) return;
+
+        // Crée l'élément
+        const item = document.createElement('div');
+        item.className = "bg-white/10 px-2 py-1 rounded-full text-sm flex items-center gap-2";
+        item.dataset.roleId = role.id;
+
+        item.innerHTML = `
+          <span>${role.name}</span>
+          <button class="text-red-400 hover:text-red-600" title="Supprimer le rôle">×</button>
+        `;
+
+        item.querySelector('button').addEventListener('click', () => {
+          item.remove();
+          updateSelectPrompt();
+        });
+
+        selectedRoles.appendChild(item);
+        updateSelectPrompt(); // Mise à jour du placeholder
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        updateSelectPrompt();
       });
     </script>
     <footer class="ml-64 w-[calc(100%-16rem)] text-white py-16 border-t border-white/10 ">
