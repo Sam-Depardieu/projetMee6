@@ -1,5 +1,5 @@
-const { AttachmentBuilder } = require('discord.js');
-const { RankCardBuilder } = require('canvacord'); // Vérifie bien l'existence
+const { AttachmentBuilder, MessageFlags } = require('discord.js');
+const Canvacord = require('canvacord');
 const fs = require('fs');
 const path = require('path');
 
@@ -22,8 +22,8 @@ module.exports = {
         const user = interaction.options.getUser("membre") || interaction.user;
         const member = interaction.guild.members.cache.get(user.id);
 
-        const userCls = await client.getUserRank(user, interaction.guild);
-        const userData = await client.getUser(user);
+        const userCls = await client.getUserClassement(user, interaction.guild);
+        const userData = await client.getGuildUser(user);
 
         const guildLevelSystem = await client.getGuildLevelSystem(interaction.guild);
         if (!guildLevelSystem || guildLevelSystem.length === 0) {
@@ -46,22 +46,27 @@ module.exports = {
             const avatar = user.displayAvatarURL({ format: 'png' });
             const username = member ? (member.nickname || user.username) : user.username;
 
-            // Création de la carte de niveau
-            const canvasRank = await new RankCardBuilder({
-                currentLvl: Number(userData.lvl) || 1,
-                currentRank: Number(userCls?.rank) || 1,
-                currentXP: Number(userData.exp) || 0,
-                requiredXP: Number(userData.nextExpReq) || 100,
-                backgroundImgURL: backgroundPath,
-                avatar: avatar,
-                nicknameText: { content: username, font: 'Nunito', color: '#0CA7FF' },
-                userStatus: member?.presence?.status || 'online',
-            }).build();
+            console.log(userData[0].xp, userData[0].nextXpReq, userData[0].level, userCls);
 
-            const attachment = new AttachmentBuilder(canvasRank.toBuffer(), { name: 'rank.png' });
 
-            await interaction.editReply({ files: [attachment] });
+            const levelImage = new Canvacord.Rank()
+                .setAvatar(avatar)
+                .setCurrentXP(userData[0].xp) // Utilise l'expérience de l'utilisateur pour représenter le niveau
+                .setRequiredXP(userData[0].nextXpReq)
+                .setLevel(userData[0].level) // Utilise le niveau de l'utilisateur
+                .setRank(userCls)
+                .setProgressBar('#FFA500', 'COLOR')
+                .setUsername(username)
+                .setDiscriminator(userData[0].pseudo)
+            
+            
+            const bgBuffer = fs.readFileSync(backgroundPath);
+            levelImage.setBackground("IMAGE", bgBuffer);
 
+            const rankCard = await levelImage.build();
+
+            await interaction.editReply({ files : [new AttachmentBuilder(rankCard, { name: 'rank.png' })] });
+            
         } catch (err) {
             console.error("Erreur canvacord :", err);
             const guildSettings = await client.getGuild(interaction.guild);

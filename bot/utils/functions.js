@@ -425,35 +425,29 @@ module.exports = client => {
         return Math.floor(base * Math.pow(level, courbe) * difficulty);
     };
 
-    client.getUserRanks = async (guild) => {
-        const users = await client.getGuilds();
-        const userRanks = [];
-        for (const user of users) {
-            const userData = await client.getGuildUser(user.idUser);
-            if (userData.length > 0 && userData[0].idGuild === String(guild.id)) {
-                userRanks.push({
-                    id: user.idUser,
-                    username: user.username,
-                    level: userData[0].lvl,
-                    exp: userData[0].exp
-                });
-            }
-        }
-        return userRanks.sort((a, b) => b.level - a.level || b.exp - a.exp);
-    };
+    client.getUserClassement = async (user, guild) => {
+        try {
+            // Récupère tous les utilisateurs du serveur
+            const allUsers = await new Promise((resolve, reject) => {
+                client.connection.query(
+                    'SELECT * FROM guildUsers WHERE idGuild = ? ORDER BY level DESC, xp DESC',
+                    [String(guild.id)],
+                    (err, results) => {
+                        if (err) return reject(err);
+                        resolve(results);
+                    }
+                );
+            });
 
-    client.getUserRank = async (user, guild) => {
-        const userData = await client.getGuildUser(user);
-        if (userData.length > 0 && userData[0].idGuild === String(guild.id)) {
-            const userRank = {
-                id: user.id,
-                username: user.username,
-                level: userData[0].lvl,
-                exp: userData[0].exp
-            };
-            return userRank;
+            // Trouve l'index de l'utilisateur dans le classement
+            const userIndex = allUsers.findIndex(u => u.idUser === user.id);
+
+            return userIndex; // Retourne le rang de l'utilisateur
         }
-        return null;
+        catch (error) {
+            console.error('Erreur lors de la récupération du classement de l\'utilisateur:', error);
+            return null;
+        }
     }
 
     client.getClassement = async (user, guild) => {
@@ -465,7 +459,7 @@ module.exports = client => {
             // Récupère les 10 meilleurs utilisateurs du serveur (par lvl puis exp)
             const topUsers = await new Promise((resolve, reject) => {
                 client.connection.query(
-                    'SELECT * FROM guildUsers WHERE idGuild = ? ORDER BY lvl DESC, exp DESC LIMIT 10',
+                    'SELECT * FROM guildUsers WHERE idGuild = ? ORDER BY level DESC, xp DESC LIMIT 10',
                     [String(guild.id)],
                     (err, results) => {
                         if (err) return reject(err);
@@ -483,7 +477,7 @@ module.exports = client => {
             topUsers.forEach((user, index) => {
                 embed.addFields({
                     name: `${emote[index]} - ${user.pseudo || user.username || user.idUser}`,
-                    value: `\`\`=>\`\` Lvl: ${user.lvl} | Exp: ${user.exp}`
+                    value: `\`\`=>\`\` Level: ${user.level} | Xp: ${user.Xp}`
                 });
             });
 
