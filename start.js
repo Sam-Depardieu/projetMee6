@@ -20,20 +20,14 @@ app.use(session({
   saveUninitialized: false
 }));
 
+app.use('/terms', express.static(path.join(__dirname, 'website/public/pages/terms.html'))); // Route pour les CGU
+
 // Fichiers statiques HTML/CSS/JS
 app.use(express.static(path.join(__dirname, 'website/public')));
 
 // Utilisation des routes
 app.use('/', authRoute);              // Routes: /login, /callback, /logout
 app.use('/dashboard', dashboardRoute); // Routes: /dashboard
-
-// Page d'accueil
-app.get('/', (req, res) => {
-  res.send(`
-    <h1>Bienvenue sur le site de ton bot</h1>
-    <a href="/login">Se connecter avec Discord</a>
-  `);
-});
 
 // Lancement du serveur
 app.listen(port, () => {

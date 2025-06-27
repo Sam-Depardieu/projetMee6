@@ -23,7 +23,7 @@ router.get('/callback', async (req, res) => {
       client_secret: process.env.CLIENT_SECRET,
       grant_type: 'authorization_code',
       code,
-      redirect_uri: process.env.REDIRECT_URI, // = https://mee7.bot.sa-it.fr/callback
+      redirect_uri: process.env.REDIRECT_URI, 
       scope: 'identify guilds'
     }), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
