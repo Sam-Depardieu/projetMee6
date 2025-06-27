@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy - MEE8</title>
+    <link rel="icon" type="image/x-icon" href="../images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+    <!-- Choices.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
+    <meta content="#dc2626" data-react-helmet="true" name="theme-color" />
+    <meta
+      name="title"
+      content="MEE8 - Take Your Server to the Next Level"
+    />
+    <meta
+      name="description"
+      content="MEE8 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="#" />
+    <meta
+      property="og:title"
+      content="MEE8 - Take Your Server to the Next Level"
+    />
+    <meta
+      property="og:description"
+      content="MEE8 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="og:image" content="./images/logo.png" />
+    <meta property="og:color" content="#5b21b6" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="#" />
+    <meta
+      property="twitter:title"
+      content="MEE8 - Take Your Server to the Next Level"
+    />
+    <meta
+      property="twitter:description"
+      content="MEE8 is a versatile Discord bot with features like giveaways, leveling, Minecraft server status tracking, games, button roles, and a much more, designed to enhance server management and engagement."
+    />
+    <meta property="twitter:image" content="../images/logo.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.10/dist/typography.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/config.css" />
+    <script src="../js/script.js"></script>
+  </head>
+  <body class="bg-black text-white min-h-screen">
+    <script>
+      const match = window.location.pathname.match(/^\/dashboard\/(\d+)/);
+      if (match) {
+        const guildIdFromURL = match[1];
+        localStorage.setItem('activeGuildId', guildIdFromURL);
+      }
+
+      fetch('/dashboard/user')
+      .then(res => {
+        if (!res.ok) throw new Error('Not logged in');
+        return res.json();
+      })
+      .then(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        showUser(user);
+        return fetch('/dashboard/guilds');
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('No guilds');
+        return res.json();
+      })
+      .then(guilds => {
+        const filteredGuilds = guilds.filter(g => g.hasBot && (g.permissions & 0x20) === 0x20);
+        localStorage.setItem('guilds', JSON.stringify(filteredGuilds));
+        showGuilds(filteredGuilds);
+        document.getElementById('loader').style.display = 'none'; // <-- Ajouté ici
+      })
+      .catch(() => {
+        showUser(null);
+        showGuilds([]);
+        document.getElementById('loader').style.display = 'none'; // <-- Ajouté ici aussi
+      });
+
+      function showGuilds(guilds) {
+        const select = document.getElementById('guildSelect');
+        select.innerHTML = ""; // vide le select
+
+        if (guilds.length === 0) {
+          const option = document.createElement('option');
+          option.textContent = 'Aucun serveur disponible';
+          option.disabled = true;
+          select.appendChild(option);
+          return;
+        }
+
+        guilds.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g.id;
+          option.textContent = g.name;
+
+          // Ici on stocke soit le logo soit une chaîne vide pour afficher initiales plus tard
+          if (g.icon) {
+            option.setAttribute('data-custom-properties', JSON.stringify({
+              logo: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=32`
+            }));
+          } else {
+            option.setAttribute('data-custom-properties', JSON.stringify({
+              logo: ''
+            }));
+          }
+
+          select.appendChild(option);
+        });
+
+        // Initialise Choices.js avec un template custom pour afficher le logo
+        if (window.choicesInstance) {
+          window.choicesInstance.destroy();
+        }
+
+        window.choicesInstance = new Choices(select, {
+          searchEnabled: false,
+          itemSelectText: '',
+          callbackOnCreateTemplates: function(template) {
+            return {
+              option: (classNames, data) => {
+                // Si on a un logo valide (url non vide), on affiche l'image
+                if (data.customProperties && data.customProperties.logo) {
+                  return template(`
+                    <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : ''}" 
+                        data-select-text="${this.config.itemSelectText}" data-choice 
+                        ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} 
+                        data-id="${data.id}" data-value="${data.value}" role="option">
+                      <img src="${data.customProperties.logo}" alt="logo" class="w-6 h-6 rounded-full mr-2 inline-block align-middle" />
+                      <span class="align-middle">${data.label}</span>
+                    </div>
+                  `);
+                } else {
+                  // Sinon, on génère les initiales dans un rond rouge
+                  const initials = data.label
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .slice(0, 2);
+
+                  return template(`
+                    <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : ''} ${data.placeholder ? classNames.placeholder : ''}" 
+                        data-item data-id="${data.id}" data-value="${data.value}" 
+                        ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''} 
+                        style="display: flex; align-items: center;">
+                      
+                      <div class="rounded-full border border-solid border-white text-dark-100 bg-dark-800 text-sm flex items-center justify-center font-bold w-6 h-6 mr-2">
+                        ${initials}
+                      </div>
+
+                      <span class="align-middle">${data.label}</span>
+                    </div>
+                  `);
+
+                }
+              },
+
+              item: (classNames, data) => {
+                if (data.customProperties && data.customProperties.logo) {
+                  return template(`
+                    <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : ''} ${data.placeholder ? classNames.placeholder : ''}" 
+                        data-item data-id="${data.id}" data-value="${data.value}" 
+                        ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''}>
+                      <img src="${data.customProperties.logo}" alt="logo" class="w-5 h-5 rounded-full mr-1 inline-block align-middle" />
+                      <span class="align-middle">${data.label}</span>
+                    </div>
+                  `);
+                } else {
+                  const initials = data.label
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .slice(0, 2);
+
+                  return template(`
+                    <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : ''} ${data.placeholder ? classNames.placeholder : ''}" 
+                        data-item data-id="${data.id}" data-value="${data.value}" 
+                        ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''} 
+                        style="display: flex; align-items: center;">
+                      
+                      <div class="rounded-full border border-solid border-white text-dark-100 bg-dark-800 text-sm flex items-center justify-center font-bold w-6 h-6 mr-2">
+                        ${initials}
+                      </div>
+
+                      <span class="align-middle">${data.label}</span>
+                    </div>
+                  `);
+
+                }
+              }
+            };
+          }
+        });
+
+        const activeGuildId = localStorage.getItem('activeGuildId');
+        if (activeGuildId) {
+          select.value = activeGuildId;
+
+          // Important : notifie Choices.js du changement
+          if (window.choicesInstance) {
+            window.choicesInstance.setChoiceByValue(activeGuildId);
+          }
+        }
+
+        select.addEventListener('change', (e) => {
+          const selectedGuildId = e.target.value;
+          localStorage.setItem('activeGuildId', selectedGuildId);
+
+          window.location.replace(`/dashboard/${selectedGuildId}`);
+
+          
+          // Exemple d'action à déclencher :
+          chargerRolesPourGuild(selectedGuildId);
+        });
+
+      }
+
+    </script>
+    <div
+      id="loader"
+      class="fixed inset-0 bg-black z-50 flex items-center justify-center"
+    >
+      <div
+        class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+    </div>
+    <nav class="fixed w-full z-50 top-0">
+      <div class="nav-blur bg-black/30 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-20">
+            <!-- Bouton menu mobile -->
+            <div class="md:hidden">
+              <button onclick="toggleMobileMenu()" class="text-white p-2" aria-label="Open mobile menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+              <img src="../images/logo.png" alt="MEE8 Logo" class="w-10 h-10 rounded-lg" />
+              <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700">MEE8</span>
+            </div>
+
+            <!-- Menu desktop -->
+            <div class="hidden md:flex gap-8">
+              <a href="../index.html#hero" class="text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="text-white/70 hover:text-white transition-colors">Testimonials</a>
+            </div>
+
+            <!-- Zone utilisateur (desktop et mobile) -->
+            <div id="userArea" class="mt-2"></div>
+          </div>
+
+          <!-- Menu mobile -->
+          <div id="mobileMenu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-black/50 rounded-lg mt-2">
+              <a href="../index.html#hero" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Home</a>
+              <a href="../index.html#features" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Features</a>
+              <a href="../index.html#commands" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Commands</a>
+              <a href="../index.html#testimonials" class="block px-3 py-2 text-white/70 hover:text-white transition-colors">Testimonials</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <section id="hero" class="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-red-900">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+            <div class="bg-black/70 rounded-2xl shadow-2xl border border-white/10 p-8 md:p-12">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Privacy Policy</h1>
+                <p class="text-lg md:text-xl text-white/70 mb-8">
+                Your privacy is important to us. This policy outlines how we handle your personal data.
+                </p>
+                <p class="text-sm text-white/40 mb-2">Last updated: June 27, 2025</p>
+            </div>
+            <div class="prose prose-invert prose-lg max-w-none text-white/90">
+        
+                <p class="text-sm text-white/60">Dernière mise à jour : 27 juin 2025</p>
+                <p class="mt-4">Cette Politique de Confidentialité décrit nos politiques et procédures concernant la collecte, l'utilisation et la divulgation de vos informations lors de l'utilisation du Service, ainsi que vos droits en matière de confidentialité et la manière dont la loi vous protège.</p>
+                <p>Nous utilisons vos données personnelles pour fournir et améliorer le Service. En utilisant le Service, vous acceptez la collecte et l'utilisation de vos informations conformément à cette Politique de Confidentialité. Cette politique a été générée à l'aide du <a href="https://www.termsfeed.com/privacy-policy-generator/" class="text-red-400 underline" target="_blank" rel="noopener">générateur de politique de confidentialité</a>.</p>
+
+                <h2 class="mt-8 text-2xl font-semibold">Interprétation et Définitions</h2>
+                <h3 class="mt-6 text-xl font-semibold">Interprétation</h3>
+                <p>Les mots dont la première lettre est en majuscule ont une signification définie dans les conditions ci-dessous. Ces définitions s'appliquent qu'elles apparaissent au singulier ou au pluriel.</p>
+
+                <h3 class="mt-6 text-xl font-semibold">Définitions</h3>
+                <p>Aux fins de cette Politique de Confidentialité :</p>
+                <ul class="list-disc list-inside space-y-2">
+                <li><strong>Compte</strong> : un compte unique permettant de vous connecter avec Discord pour gérer la configuration du bot.</li>
+                <li><strong>Application</strong> : désigne Mee8, le bot Discord géré par ce site Web.</li>
+                <li><strong>Entreprise</strong> (appelée « l’Entreprise », « Nous », « Notre » ou « Nos » dans ce document) : désigne Mee8.</li>
+                <li><strong>Cookies</strong> : petits fichiers placés sur votre appareil par un site Web, contenant des détails sur votre historique de navigation parmi d’autres usages.</li>
+                <li><strong>Pays</strong> : fait référence à la France.</li>
+                <li><strong>Appareil</strong> : tout appareil pouvant accéder au Service tel qu’un ordinateur, un téléphone portable ou une tablette.</li>
+                <li><strong>Données personnelles</strong> : toute information relative à une personne identifiée ou identifiable.</li>
+                <li><strong>Service</strong> : désigne le site Web permettant de configurer le bot Mee8 via Discord.</li>
+                <li><strong>Données d’utilisation</strong> : données collectées automatiquement, soit générées par l’utilisation du Service, soit par l’infrastructure du Service elle-même (par exemple, la durée d’une visite de page).</li>
+                <li><strong>Site Web</strong> : fait référence à Mee8, accessible depuis <a href="https://bot.sa-it.fr" class="text-red-400 underline" target="_blank" rel="external nofollow noopener">https://bot.sa-it.fr</a>.</li>
+                <li><strong>Vous</strong> : la personne utilisant le Service.</li>
+                </ul>
+
+                <h2 class="mt-8 text-2xl font-semibold">Collecte et utilisation de vos données personnelles</h2>
+                <h3 class="mt-6 text-xl font-semibold">Types de données collectées</h3>
+                <h4 class="mt-4 font-semibold">Données personnelles</h4>
+                <p>Lors de l’utilisation de notre Service, nous pouvons collecter les informations suivantes :</p>
+                <ul class="list-disc list-inside space-y-2">
+                <li>Identifiant Discord</li>
+                <li>Nom d'utilisateur Discord</li>
+                <li>Adresse IP</li>
+                <li>Données d’utilisation</li>
+                </ul>
+
+                <h4 class="mt-4 font-semibold">Données d’utilisation</h4>
+                <p>Les données d’utilisation sont collectées automatiquement lors de l’utilisation du Service. Elles peuvent inclure des informations telles que l’adresse IP de votre appareil, le type de navigateur, la version du navigateur, les pages visitées, la date et l’heure de la visite, la durée de la visite, les identifiants uniques de l’appareil et d’autres données de diagnostic.</p>
+
+                <h3 class="mt-6 text-xl font-semibold">Suivi et cookies</h3>
+                <p>Nous utilisons des cookies et technologies similaires pour suivre l’activité sur notre Service et stocker certaines informations. Ces technologies incluent les balises, les tags et les scripts destinés à collecter et suivre les informations, ainsi qu'à améliorer et analyser notre Service.</p>
+                <p>Les cookies peuvent être persistants (restent sur votre appareil après la fin de votre session) ou de session (supprimés dès que vous fermez votre navigateur). Vous pouvez configurer votre navigateur pour refuser les cookies, mais certaines fonctionnalités de notre Service pourraient ne pas fonctionner correctement.</p>
+
+                <h3 class="mt-6 text-xl font-semibold">Utilisation de vos données personnelles</h3>
+                <p>Nous utilisons vos données personnelles pour :</p>
+                <ul class="list-disc list-inside space-y-2">
+                <li>Permettre la connexion avec Discord</li>
+                <li>Afficher et gérer vos serveurs Discord dans l’interface</li>
+                <li>Configurer le bot Mee8 sur vos serveurs</li>
+                <li>Analyser l’utilisation du Service pour l’améliorer</li>
+                </ul>
+
+                <h3 class="mt-6 text-xl font-semibold">Conservation de vos données</h3>
+                <p>Nous conservons vos données personnelles uniquement le temps nécessaire aux finalités décrites dans cette Politique. Certaines données peuvent être conservées plus longtemps si la loi l’exige.</p>
+
+                <h3 class="mt-6 text-xl font-semibold">Suppression de vos données</h3>
+                <p>Vous avez le droit de demander la suppression de vos données personnelles. Vous pouvez nous contacter pour effectuer cette demande. Certaines données pourront être conservées si la loi l’impose.</p>
+
+                <h3 class="mt-6 text-xl font-semibold">Sécurité de vos données</h3>
+                <p>Nous mettons en œuvre des mesures de sécurité raisonnables pour protéger vos données. Cependant, aucun système de transmission ou de stockage électronique n’est totalement sécurisé.</p>
+
+                <h2 class="mt-8 text-2xl font-semibold">Contact</h2>
+                <p>Pour toute question concernant cette Politique de Confidentialité, vous pouvez nous contacter à l’adresse suivante :</p>
+                <ul class="list-disc list-inside">
+                <li>Par e-mail : <a href="mailto:sam.depardieu@sa-it.fr" class="text-red-400 underline">sam.depardieu@sa-it.fr</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </section>    
+
+    <footer class="ml-64 w-[calc(100%-16rem)] text-white py-16 border-t border-white/10 ">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div>
+            <img
+              class="h-10 mb-6"
+              src="../images/logo.png"
+              alt="MEE8 Logo"
+            />
+            <p class="text-lg text-white/70">
+              MEE8 is the ultimate tool for transforming your Discord server
+              management with powerful features like leveling, moderation,
+              giveaways, and more!
+            </p>
+          </div>
+          <div>
+            <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
+            <ul class="space-y-4">
+              <li>
+                <a href="../index.html#hero" class="text-white/70 hover:text-white">Home</a>
+              </li>
+              <li>
+                <a href="../index.html#features" class="text-white/70 hover:text-white"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="../index.html#commands" class="text-white/70 hover:text-white"
+                  >Commands</a
+                >
+              </li>
+              <li>
+                <a href="../index.html#testimonials" class="text-white/70 hover:text-white"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
+            <ul class="space-y-4">
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">Invite</a>
+              </li>
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">Discord</a>
+              </li>
+              <li>
+                <a href="#" class="text-white/70 hover:text-white">GitHub</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 border-t border-white/20 pt-6 text-center">
+          <p class="text-sm text-white/50">
+            © 2025 MEE8. All rights reserved. • Not affiliated with Discord
+            Inc.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

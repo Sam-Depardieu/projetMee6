@@ -21,6 +21,7 @@ app.use(session({
 }));
 
 app.use('/terms', express.static(path.join(__dirname, 'website/public/pages/terms.html'))); // Route pour les CGU
+app.use('/privacy', express.static(path.join(__dirname, 'website/public/pages/privacy.html'))); // Route pour les CGU
 
 // Fichiers statiques HTML/CSS/JS
 app.use(express.static(path.join(__dirname, 'website/public')));
