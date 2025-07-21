@@ -53,7 +53,7 @@
     <link rel="stylesheet" href="../css/config.css" />
     <script src="../js/script.js"></script>
   </head>
-  <body class="bg-black text-white min-h-screen">
+  <body id="guildData" class="bg-black text-white min-h-screen" data-guild-id="">
     <script>
       const match = window.location.pathname.match(/^\/dashboard\/(\d+)/);
       if (match) {
@@ -203,6 +203,7 @@
         });
 
         const activeGuildId = localStorage.getItem('activeGuildId');
+        document.getElementById('guildData').dataset.guildId = activeGuildId;
         if (activeGuildId) {
           select.value = activeGuildId;
 
@@ -332,31 +333,58 @@
             <div id="welcome-config" class="pl-1 space-y-4 hidden">
               <div>
                 <label class="block mb-1">Message d'accueil</label>
-                <input type="text" class="w-full bg-gray-800 p-2 rounded" placeholder="Bienvenue sur notre serveur !" data-field="welcomeMessage"/>
+                <input
+                  type="text"
+                  class="w-full bg-gray-800 p-2 rounded"
+                  placeholder="Bienvenue sur notre serveur ${user.name}!"
+                  data-field="welcomeMessage"
+                  data-required="true"
+                />
               </div>
               <div>
-                <label class="block mb-1">Rôles d'arrivée</label>
-                <div id="welcomeRoleList" class="relative inline-block w-full bg-gray-800 p-2 rounded h-13">
-                  <ul id="selectedRoles" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap">
-                    <!-- Rôles sélectionnés seront injectés ici -->
+                <label class="block mb-1">Channel d'arrivée</label>
+                <div
+                  id="welcomeChannelsList"
+                  class="relative inline-block w-full bg-gray-800 p-2 rounded h-13"
+                  
+                >
+                  <ul id="selectedChannels" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap" data-field="welcomeChannels" data-required="true">
+                    <!-- Channels sélectionnés seront injectés ici -->
                   </ul>
-
-                  <!-- Dropdown des rôles -->
-                  <div id="roleDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
-                    <ul id="roleOptions" class="max-h-60 overflow-y-auto"></ul>
+                  <!-- Dropdown des channels -->
+                  <div id="channelDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
+                    <ul id="channelOptions" class="max-h-60 overflow-y-auto"></ul>
                   </div>
-
                   <!-- Bouton + -->
-                  <button id="addWelcomeRole" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
+                  <button id="addWelcomeChannel" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
                     +
                   </button>
                 </div>
               </div>
               <div>
                 <label class="inline-flex items-center gap-2">
-                  <input type="checkbox" data-field="assignRole"/>
+                  <label class="switch" title="Activer le message de bienvenue">
+                    <input type="checkbox" data-field="assignRole" id="assignRoleCheckbox" title="Activer le message de bienvenue"/>
+                    <span class="slider round"></span>
+                  </label>
                   <span>Attribuer un rôle d'accueil</span>
                 </label>
+              </div>
+              <div id="welcomeRoleListContainer" class="mt-2 hidden">
+                <label class="block mb-1">Rôles d'arrivée</label>
+                <div id="welcomeRoleList" class="relative inline-block w-full bg-gray-800 p-2 rounded h-13">
+                  <ul id="selectedRoles" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap">
+                    <!-- Rôles sélectionnés seront injectés ici -->
+                  </ul>
+                  <!-- Dropdown des rôles -->
+                  <div id="roleDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
+                    <ul id="roleOptions" class="max-h-60 overflow-y-auto"></ul>
+                  </div>
+                  <!-- Bouton + -->
+                  <button id="addWelcomeRole" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -428,6 +456,27 @@
     
 
     <script>
+
+      const assignRoleCheckbox = document.getElementById('assignRoleCheckbox');
+      const welcomeRoleListContainer = document.getElementById('welcomeRoleListContainer');
+      const selectedRoles = document.getElementById('selectedRoles');
+
+      function updateRoleSelectionVisibility() {
+        if (assignRoleCheckbox.checked) {
+          welcomeRoleListContainer.classList.remove('hidden');
+          // Rendre la sélection obligatoire
+          selectedRoles.setAttribute('data-required', 'true');
+        } else {
+          welcomeRoleListContainer.classList.add('hidden');
+          // Ne plus rendre la sélection obligatoire
+          selectedRoles.removeAttribute('data-required');
+        }
+      }
+
+      // Initialisation au chargement
+      assignRoleCheckbox.addEventListener('change', updateRoleSelectionVisibility);
+      document.addEventListener('DOMContentLoaded', updateRoleSelectionVisibility);
+
       document.querySelectorAll('aside button').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.module-config').forEach(div => div.classList.add('hidden'));
@@ -523,14 +572,80 @@
         const container = document.getElementById(moduleId);
         const fields = container.querySelectorAll('[data-field]');
         const data = {};
+        let missing = [];
+
         fields.forEach(field => {
-          data[field.dataset.field] = field.type === 'checkbox' ? field.checked : field.value;
+          const value = field.type === 'checkbox' ? field.checked : field.value;
+          data[field.dataset.field] = value;
+
+          // Vérification des champs obligatoires
+          // On saute la vérification ici pour les listes custom (welcomeChannels, welcomeRoles)
+          if (
+            field.dataset.required === "true" &&
+            field.dataset.field !== "welcomeChannels" &&
+            field.dataset.field !== "welcomeRoles"
+          ) {
+            if ((field.type === 'checkbox' && !field.checked) ||
+                (field.type !== 'checkbox' && (!value || value.trim() === ""))) {
+              missing.push(field.dataset.field);
+            }
+          }
         });
 
-        console.log("🔁 Sauvegarde de", moduleId, data);
+        // Vérifie aussi les listes custom (exemple pour welcomeRoles et welcomeChannels)
+        if (moduleId === "module-welcome") {
+          // Récupère les rôles sélectionnés
+          data.welcomeRoles = Array.from(document.getElementById('selectedRoles').querySelectorAll('[data-role-id]')).map(el => ({
+            id: el.dataset.roleId,
+            name: el.querySelector('span')?.textContent || ''
+          }));
 
-        storeInitialState(moduleId);
-        hideSaveBar();
+          // Récupère les salons sélectionnés
+          data.welcomeChannels = Array.from(document.getElementById('selectedChannels').querySelectorAll('[data-channel-id]')).map(el => ({
+            id: el.dataset.channelId,
+            name: el.querySelector('span')?.textContent || ''
+          }));
+
+          // Vérifie si la liste des salons est obligatoire
+          const channelsField = document.querySelector('[data-field="welcomeChannels"][data-required="true"]');
+          if (channelsField && (!data.welcomeChannels || data.welcomeChannels.length === 0)) {
+            missing.push('welcomeChannels');
+          }
+
+          // Vérifie si la sélection de rôles est obligatoire (si assignRole est coché)
+          const assignRoleChecked = document.getElementById('assignRoleCheckbox')?.checked;
+          if (assignRoleChecked) {
+            if (!data.welcomeRoles || data.welcomeRoles.length === 0) {
+              missing.push('welcomeRoles');
+            }
+          }
+        }
+
+        if (missing.length > 0) {
+          alert("Les champs obligatoires suivants sont manquants : " + missing.join(', '));
+          return;
+        }
+
+        data.guildId = document.getElementById('guildData').dataset.guildId || localStorage.getItem('activeGuildId');
+
+        fetch('/dashboard/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+          .then(res => res.json())
+          .then(result => {
+            if (result.success) {
+              alert('Configuration sauvegardée !');
+              storeInitialState(moduleId);
+              hideSaveBar();
+            } else {
+              alert('Erreur lors de la sauvegarde : ' + (result.error || 'inconnue'));
+            }
+          })
+          .catch(() => {
+            alert('Erreur réseau lors de la sauvegarde.');
+          });
       }
 
       // Barre de sauvegarde
@@ -575,48 +690,19 @@
       document.getElementById('saveWelcome')?.addEventListener('click', () => {
         if (currentModuleId) saveForm(currentModuleId);
       });
-
-      document.getElementById('addWelcomeRole').addEventListener('click', async () => {
-        const guildId = document.getElementById('guildData').dataset.guildId;
-
-        try {
-          const res = await fetch(`/dashboard/guilds/${guildId}/roles`);
-          if (!res.ok) {
-            const { error } = await res.json();
-            return alert(`Erreur : ${error}`);
-          }
-
-          const roles = await res.json();
-          const select = document.getElementById('welcomeRoleSelect');
-
-          // Nettoie la liste pour éviter les doublons
-          select.innerHTML = '';
-
-          for (const role of roles) {
-            const option = document.createElement('option');
-            option.value = role.id;
-            option.textContent = role.name + (role.managed ? ' (géré)' : '');
-            select.appendChild(option);
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Erreur lors du chargement des rôles.");
-        }
-      });
-
-      const addBtn = document.getElementById('addWelcomeRole');
-      const dropdown = document.getElementById('roleDropdown');
+      
+      // Dropdown rôles
+      const addRoleBtn = document.getElementById('addWelcomeRole');
+      const roleDropdown = document.getElementById('roleDropdown');
       const roleOptions = document.getElementById('roleOptions');
-      const selectedRoles = document.getElementById('selectedRoles');
-      let allRoles = []; // stocke les rôles récupérés
+      let allRoles = [];
 
-      // Affiche ou cache le dropdown
-      addBtn.addEventListener('click', async () => {
-        const guildId = localStorage.getItem('activeGuildId');
+      addRoleBtn.addEventListener('click', async () => {
+        const guildId = localStorage.getItem('activeGuildId') || document.getElementById('guildData').dataset.guildId;
         if (!guildId) return alert("Veuillez d'abord sélectionner un serveur.");
 
         // Toggle dropdown
-        dropdown.classList.toggle('hidden');
+        roleDropdown.classList.toggle('hidden');
 
         // Si déjà chargé, pas besoin de refetch
         if (allRoles.length > 0) return;
@@ -638,8 +724,8 @@
             li.dataset.roleId = role.id;
 
             li.addEventListener('click', () => {
-              ajouterRole(role);
-              dropdown.classList.add('hidden');
+              ajouterItem(role, "role");
+              roleDropdown.classList.add('hidden');
             });
 
             roleOptions.appendChild(li);
@@ -651,115 +737,115 @@
         }
       });
 
-      function updateSelectPrompt() {
-        const selectedRoles = document.getElementById('selectedRoles');
-        if (!selectedRoles) return;
+      // Dropdown salons
+      const addChannelBtn = document.getElementById('addWelcomeChannel');
+      const channelDropdown = document.getElementById('channelDropdown');
+      const channelOptions = document.getElementById('channelOptions');
+      let allChannels = [];
+
+      addChannelBtn.addEventListener('click', async () => {
+        const guildId = localStorage.getItem('activeGuildId') || document.getElementById('guildData').dataset.guildId;
+        if (!guildId) return alert("Veuillez d'abord sélectionner un serveur.");
+
+        // Toggle dropdown
+        channelDropdown.classList.toggle('hidden');
+
+        // Si déjà chargé, pas besoin de refetch
+        if (allChannels.length > 0) return;
+
+        try {
+          const res = await fetch(`/dashboard/guilds/${guildId}/salons`);
+          if (!res.ok) {
+            const { error } = await res.json();
+            return alert(`Erreur : ${error}`);
+          }
+
+          allChannels = await res.json();
+          channelOptions.innerHTML = '';
+
+          allChannels.forEach(channel => {
+            const li = document.createElement('li');
+            li.textContent = channel.name;
+            li.className = "px-4 py-2 hover:bg-white/10 cursor-pointer transition";
+            li.dataset.channelId = channel.id;
+
+            li.addEventListener('click', () => {
+              ajouterItem(channel, "channel");
+              channelDropdown.classList.add('hidden');
+            });
+
+            channelOptions.appendChild(li);
+          });
+
+        } catch (err) {
+          console.error(err);
+          alert("Erreur lors du chargement des salons.");
+        }
+      });
+
+      function updateSelectPrompt(type = "role") {
+        // Détermine l'ID de la liste selon le type
+        const listId = type === "role" ? 'selectedRoles' : 'selectedChannels';
+        const selectedList = document.getElementById(listId);
+        if (!selectedList) return;
 
         // Supprime les anciens prompts
-        const oldPrompt = selectedRoles.querySelector('.select-role-placeholder');
+        const oldPrompt = selectedList.querySelector('.select-' + type + '-placeholder');
         if (oldPrompt) oldPrompt.remove();
 
-        const hasRoles = selectedRoles.querySelectorAll('[data-role-id]').length > 0;
+        // Vérifie s'il y a des éléments sélectionnés
+        const dataAttr = type === "role" ? 'data-role-id' : 'data-channel-id';
+        const hasItems = selectedList.querySelectorAll(`[${dataAttr}]`).length > 0;
 
-        if (!hasRoles) {
+        if (!hasItems) {
           const li = document.createElement('li');
-          li.className = 'text-gray-400 select-role-placeholder';
-          li.textContent = 'Sélectionner un rôle';
-          selectedRoles.appendChild(li);
+          li.className = `text-gray-400 select-${type}-placeholder`;
+          li.textContent = `Sélectionner un ${type}`;
+          selectedList.appendChild(li);
         }
       }
 
       // Fonction d’ajout de rôle dans la liste
-      function ajouterRole(role) {
-        const selectedRoles = document.getElementById('selectedRoles');
-        if (!selectedRoles) return;
+      function ajouterItem(item, type = "role") {
+        // type = "role" ou "channel"
+        const listId = type === "role" ? 'selectedRoles' : 'selectedChannels';
+        const selectedList = document.getElementById(listId);
+        if (!selectedList) return;
 
         // Ne rien faire si déjà présent
-        if (selectedRoles.querySelector(`[data-role-id="${role.id}"]`)) return;
+        if (selectedList.querySelector(`[data-${type}-id="${item.id}"]`)) return;
 
-        // Crée l'élément
-        const item = document.createElement('div');
-        item.className = "bg-white/10 px-2 py-1 rounded-full text-sm flex items-center gap-2";
-        item.dataset.roleId = role.id;
+        // Crée l'élément LI
+        const elem = document.createElement('li');
+        elem.className = "bg-white/10 px-2 py-1 rounded-full text-sm flex items-center gap-2";
+        elem.dataset[`${type}Id`] = item.id;
 
-        item.innerHTML = `
-          <span>${role.name}</span>
-          <button class="text-red-400 hover:text-red-600" title="Supprimer le rôle">×</button>
+        elem.innerHTML = `
+          <span>${item.name}</span>
+          <button class="text-red-400 hover:text-red-600" title="Supprimer">×</button>
         `;
 
-        item.querySelector('button').addEventListener('click', () => {
-          item.remove();
-          updateSelectPrompt();
+        elem.querySelector('button').addEventListener('click', () => {
+          elem.remove();
+          updateSelectPrompt(type);
         });
 
-        selectedRoles.appendChild(item);
-        updateSelectPrompt(); // Mise à jour du placeholder
+        selectedList.appendChild(elem);
+        updateSelectPrompt(type);
       }
 
       document.addEventListener('DOMContentLoaded', () => {
-        updateSelectPrompt();
+        updateSelectPrompt("role");
+        updateSelectPrompt("channel");
       });
     </script>
-    <footer class="ml-64 w-[calc(100%-16rem)] text-white py-16 border-t border-white/10 ">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div>
-            <img
-              class="h-10 mb-6"
-              src="../images/logo.png"
-              alt="MEE8 Logo"
-            />
-            <p class="text-lg text-white/70">
-              MEE8 is the ultimate tool for transforming your Discord server
-              management with powerful features like leveling, moderation,
-              giveaways, and more!
-            </p>
-          </div>
-          <div>
-            <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
-            <ul class="space-y-4">
-              <li>
-                <a href="../index.html#hero" class="text-white/70 hover:text-white">Home</a>
-              </li>
-              <li>
-                <a href="../index.html#features" class="text-white/70 hover:text-white"
-                  >Features</a
-                >
-              </li>
-              <li>
-                <a href="../index.html#commands" class="text-white/70 hover:text-white"
-                  >Commands</a
-                >
-              </li>
-              <li>
-                <a href="../index.html#testimonials" class="text-white/70 hover:text-white"
-                  >Testimonials</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
-            <ul class="space-y-4">
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">Invite</a>
-              </li>
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">Discord</a>
-              </li>
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">GitHub</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-12 border-t border-white/20 pt-6 text-center">
-          <p class="text-sm text-white/50">
-            © 2025 MEE8. All rights reserved. • Not affiliated with Discord
-            Inc.
-          </p>
-        </div>
-      </div>
-    </footer>
+    <footer id="footer-container"></footer>
+    <script>
+        fetch('../composants/footer.html')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('footer-container').innerHTML = html;
+        });
+    </script>
   </body>
 </html>

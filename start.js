@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mysql = require('mysql2');
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -6,7 +7,7 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-require('./bot/index.js');
+const client = require('./bot/index.js');
 //const client = require('./bot'); // Import du client Discord
 
 // Import des routes
@@ -19,6 +20,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+
+app.use(express.json());
 
 app.use('/terms', express.static(path.join(__dirname, 'website/public/pages/terms.html'))); // Route pour les CGU
 app.use('/privacy', express.static(path.join(__dirname, 'website/public/pages/privacy.html'))); // Route pour les CGU

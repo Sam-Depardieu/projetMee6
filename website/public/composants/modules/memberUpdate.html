@@ -1,0 +1,88 @@
+<div id="module-welcome" class="module-config hidden space-y-8">
+    <h3 class="text-xl font-semibold mb-2">⚙️ Configuration des messages d'arrivée et de départ</h3>
+
+    <!-- Bloc : Message de bienvenue -->
+    <div>
+        <div class="flex items-center justify-between mb-3">
+        <h4 class="text-lg font-semibold">🎉 Message de bienvenue</h4>
+        <label class="switch" for="toggle-welcome" title="Activer le message de bienvenue">
+            <input type="checkbox" id="toggle-welcome" title="Activer le message de bienvenue" data-field="welcomeEnabled"/>
+            <span class="slider round"></span>
+        </label>
+        </div>
+        <div id="welcome-config" class="pl-1 space-y-4 hidden">
+        <div>
+            <label class="block mb-1">Message d'accueil</label>
+            <input
+            type="text"
+            class="w-full bg-gray-800 p-2 rounded"
+            placeholder="Bienvenue sur notre serveur ${user.name}!"
+            data-field="welcomeMessage"
+            data-required="true"
+            />
+        </div>
+        <div>
+            <label class="block mb-1">Channel d'arrivée</label>
+            <div
+            id="welcomeChannelsList"
+            class="relative inline-block w-full bg-gray-800 p-2 rounded h-13"
+            
+            >
+            <ul id="selectedChannels" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap" data-field="welcomeChannels" data-required="true">
+                <!-- Channels sélectionnés seront injectés ici -->
+            </ul>
+            <!-- Dropdown des channels -->
+            <div id="channelDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
+                <ul id="channelOptions" class="max-h-60 overflow-y-auto"></ul>
+            </div>
+            <!-- Bouton + -->
+            <button id="addWelcomeChannel" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
+                +
+            </button>
+            </div>
+        </div>
+        <div>
+            <label class="inline-flex items-center gap-2">
+            <label class="switch" title="Activer le message de bienvenue">
+                <input type="checkbox" data-field="assignRole" id="assignRoleCheckbox" title="Activer le message de bienvenue"/>
+                <span class="slider round"></span>
+            </label>
+            <span>Attribuer un rôle d'accueil</span>
+            </label>
+        </div>
+        <div id="welcomeRoleListContainer" class="mt-2 hidden">
+            <label class="block mb-1">Rôles d'arrivée</label>
+            <div id="welcomeRoleList" class="relative inline-block w-full bg-gray-800 p-2 rounded h-13">
+            <ul id="selectedRoles" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap">
+                <!-- Rôles sélectionnés seront injectés ici -->
+            </ul>
+            <!-- Dropdown des rôles -->
+            <div id="roleDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
+                <ul id="roleOptions" class="max-h-60 overflow-y-auto"></ul>
+            </div>
+            <!-- Bouton + -->
+            <button id="addWelcomeRole" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
+                +
+            </button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Bloc : Message de départ -->
+    <div>
+        <div class="flex items-center justify-between mb-3">
+        <h4 class="text-lg font-semibold">👋 Message de départ</h4>
+        <label class="switch" for="toggle-leave" title="Activer le message de départ">
+            <input type="checkbox" id="toggle-leave" title="Activer le message de départ" data-field="leaveEnabled"/>
+            <span class="slider round"></span>
+        </label>
+        </div>
+        <div id="leave-config" class="pl-1 space-y-4 hidden">
+        <div>
+            <label class="block mb-1">Message de départ</label>
+            <input type="text" class="w-full bg-gray-800 p-2 rounded" placeholder="À bientôt !" data-field="leaveMessage"/>
+        </div>
+        </div>
+    </div>
+</div>

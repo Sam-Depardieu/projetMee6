@@ -81,6 +81,22 @@ module.exports = client => {
         });
     };
 
+    client.createMessageMemberAdd = (message, guild) => {
+    
+        return new Promise((resolve, reject) => {
+            client.connection.query(
+                'INSERT INTO guildMemberAdd (idGuild, message) VALUES (?, ?)',
+                [String(guild.id), message.id], // Assurez-vous que l'ID de la guilde est en string
+                (err, results) => {
+                    if (err) return reject(err);
+                    console.log(`Message d'ajout de membre créé pour la guild ${guild.name} dans la base de donnée.`);
+                    resolve(results);
+                }
+            );
+        });
+    
+    }
+
     client.updateUser = async (user, guild, settings) => {
         try {
             // Construction dynamique de la requête SQL
@@ -414,8 +430,6 @@ module.exports = client => {
 
         return [updatedMemberSettings, xpFinal];
     };
-
-
 
     client.calculateXp = (level, difficulty) => {
         // Formule lissée : XP requis = base * (level^courbe) * difficulté

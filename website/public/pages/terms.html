@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - MEE8</title>
+    <title>Terms - MEE8</title>
     <link rel="icon" type="image/x-icon" href="../images/logo.png">
     <meta content="#dc2626" data-react-helmet="true" name="theme-color" />
     <meta
@@ -228,67 +228,13 @@
         </div>
     </div>
 </section>
-
-  <footer class="text-white py-16 border-t border-white/10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div>
-            <img
-              class="h-10 mb-6"
-              src="../images/logo.png"
-              alt="MEE8 Logo"
-            />
-            <p class="text-lg text-white/70">
-              MEE8 is the ultimate tool for transforming your Discord server
-              management with powerful features like leveling, moderation,
-              giveaways, and more!
-            </p>
-          </div>
-          <div>
-            <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
-            <ul class="space-y-4">
-              <li>
-                <a href="../index.html#hero" class="text-white/70 hover:text-white">Home</a>
-              </li>
-              <li>
-                <a href="../index.html#features" class="text-white/70 hover:text-white"
-                  >Features</a
-                >
-              </li>
-              <li>
-                <a href="../index.html#commands" class="text-white/70 hover:text-white"
-                  >Commands</a
-                >
-              </li>
-              <li>
-                <a href="../index.html#testimonials" class="text-white/70 hover:text-white"
-                  >Testimonials</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
-            <ul class="space-y-4">
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">Invite</a>
-              </li>
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">Discord</a>
-              </li>
-              <li>
-                <a href="#" class="text-white/70 hover:text-white">GitHub</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-12 border-t border-white/20 pt-6 text-center">
-          <p class="text-sm text-white/50">
-            © 2025 MEE8. All rights reserved. • Not affiliated with Discord
-            Inc.
-          </p>
-        </div>
-      </div>
-    </footer>
+  <footer id="footer-container"></footer>
+  <script>
+    fetch('../composants/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('footer-container').innerHTML = html;
+      });
+  </script>
 </body>
 </html>
