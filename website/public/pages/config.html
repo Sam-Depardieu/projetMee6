@@ -318,95 +318,9 @@
 
       <!-- Colonne de droite : configuration active -->
       <div class="ml-64 w-[calc(100%-16rem)] bg-black p-6 text-white min-h-screen">
-        <div id="module-welcome" class="module-config hidden space-y-8">
-          <h3 class="text-xl font-semibold mb-2">⚙️ Configuration des messages d'arrivée et de départ</h3>
-
-          <!-- Bloc : Message de bienvenue -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="text-lg font-semibold">🎉 Message de bienvenue</h4>
-              <label class="switch" for="toggle-welcome" title="Activer le message de bienvenue">
-                <input type="checkbox" id="toggle-welcome" title="Activer le message de bienvenue" data-field="welcomeEnabled"/>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div id="welcome-config" class="pl-1 space-y-4 hidden">
-              <div>
-                <label class="block mb-1">Message d'accueil</label>
-                <input
-                  type="text"
-                  class="w-full bg-gray-800 p-2 rounded"
-                  placeholder="Bienvenue sur notre serveur ${user.name}!"
-                  data-field="welcomeMessage"
-                  data-required="true"
-                />
-              </div>
-              <div>
-                <label class="block mb-1">Channel d'arrivée</label>
-                <div
-                  id="welcomeChannelsList"
-                  class="relative inline-block w-full bg-gray-800 p-2 rounded h-13"
-                  
-                >
-                  <ul id="selectedChannels" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap" data-field="welcomeChannels" data-required="true">
-                    <!-- Channels sélectionnés seront injectés ici -->
-                  </ul>
-                  <!-- Dropdown des channels -->
-                  <div id="channelDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
-                    <ul id="channelOptions" class="max-h-60 overflow-y-auto"></ul>
-                  </div>
-                  <!-- Bouton + -->
-                  <button id="addWelcomeChannel" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
-                    +
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label class="inline-flex items-center gap-2">
-                  <label class="switch" title="Activer le message de bienvenue">
-                    <input type="checkbox" data-field="assignRole" id="assignRoleCheckbox" title="Activer le message de bienvenue"/>
-                    <span class="slider round"></span>
-                  </label>
-                  <span>Attribuer un rôle d'accueil</span>
-                </label>
-              </div>
-              <div id="welcomeRoleListContainer" class="mt-2 hidden">
-                <label class="block mb-1">Rôles d'arrivée</label>
-                <div id="welcomeRoleList" class="relative inline-block w-full bg-gray-800 p-2 rounded h-13">
-                  <ul id="selectedRoles" class="flex gap-1 p-2 pr-10 bg-black/60 rounded-xl shadow-2xl backdrop-blur-sm h-10 overflow-hidden whitespace-nowrap">
-                    <!-- Rôles sélectionnés seront injectés ici -->
-                  </ul>
-                  <!-- Dropdown des rôles -->
-                  <div id="roleDropdown" class="hidden absolute mt-2 w-52 bg-black/90 text-white rounded-xl shadow-xl ring-1 ring-white/10 z-50">
-                    <ul id="roleOptions" class="max-h-60 overflow-y-auto"></ul>
-                  </div>
-                  <!-- Bouton + -->
-                  <button id="addWelcomeRole" class="w-8 h-8 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full flex items-center justify-center absolute top-3 right-3 z-20">
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bloc : Message de départ -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="text-lg font-semibold">👋 Message de départ</h4>
-              <label class="switch" for="toggle-leave" title="Activer le message de départ">
-                <input type="checkbox" id="toggle-leave" title="Activer le message de départ" data-field="leaveEnabled"/>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div id="leave-config" class="pl-1 space-y-4 hidden">
-              <div>
-                <label class="block mb-1">Message de départ</label>
-                <input type="text" class="w-full bg-gray-800 p-2 rounded" placeholder="À bientôt !" data-field="leaveMessage"/>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        
+        <div id="module-welcome" class="module-config hidden space-y-8"> </div>
+        
 
         <div id="module-autoMod" class="module-config hidden">
           <h3 class="text-xl font-semibold mb-4">🛡️ Configuration – Modération</h3>
@@ -452,87 +366,24 @@
 
       
     </section>
-
     
-
+    <footer id="footer-container"></footer>
     <script>
-
-      const assignRoleCheckbox = document.getElementById('assignRoleCheckbox');
-      const welcomeRoleListContainer = document.getElementById('welcomeRoleListContainer');
-      const selectedRoles = document.getElementById('selectedRoles');
-
-      function updateRoleSelectionVisibility() {
-        if (assignRoleCheckbox.checked) {
-          welcomeRoleListContainer.classList.remove('hidden');
-          // Rendre la sélection obligatoire
-          selectedRoles.setAttribute('data-required', 'true');
-        } else {
-          welcomeRoleListContainer.classList.add('hidden');
-          // Ne plus rendre la sélection obligatoire
-          selectedRoles.removeAttribute('data-required');
-        }
-      }
-
-      // Initialisation au chargement
-      assignRoleCheckbox.addEventListener('change', updateRoleSelectionVisibility);
-      document.addEventListener('DOMContentLoaded', updateRoleSelectionVisibility);
-
-      document.querySelectorAll('aside button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.module-config').forEach(div => div.classList.add('hidden'));
-          document.getElementById(`module-${btn.dataset.module}`).classList.remove('hidden');
-        });
-      });
-
-      // Affiche ou masque les champs des modules activés
-      document.getElementById('toggle-welcome')?.addEventListener('change', e => {
-        document.getElementById('welcome-config')?.classList.toggle('hidden', !e.target.checked);
-      });
-
-      document.getElementById('toggle-leave')?.addEventListener('change', e => {
-        document.getElementById('leave-config')?.classList.toggle('hidden', !e.target.checked);
-      });
-
-      // Affiche le module cliqué depuis la navigation
-      const buttons = document.querySelectorAll('[data-module]');
-      const modules = document.querySelectorAll('.module-config');
-
-      buttons.forEach(button => {
-        button.addEventListener('click', () => {
-          const targetId = `module-${button.dataset.module}`;
-          modules.forEach(mod => mod.classList.add('hidden'));
-          document.getElementById(targetId)?.classList.remove('hidden');
-
-          buttons.forEach(b => b.classList.remove('bg-gray-800'));
-          button.classList.add('bg-gray-800');
-        });
-      });
+      window.initialStates = {};
 
       const saveBar = document.getElementById('saveBar');
-
-      let initialStates = {};
-      let currentModuleId = null;
-
-      // Stocke l’état initial d’un module
-      function storeInitialState(moduleId) {
-        const container = document.getElementById(moduleId);
-        if (!container) return;
-
-        const fields = container.querySelectorAll('[data-field]');
-        initialStates[moduleId] = {};
-        fields.forEach(field => {
-          initialStates[moduleId][field.dataset.field] = field.type === 'checkbox' ? field.checked : field.value;
-        });
-
-        hideSaveBar();
+      function showSaveBar() {
+        saveBar.classList.remove('hidden');
+      }
+      function hideSaveBar() {
+        saveBar.classList.add('hidden');
       }
 
-      // Vérifie si l'état a changé pour un module
       function checkChanges(moduleId) {
         const container = document.getElementById(moduleId);
         const fields = container.querySelectorAll('[data-field]');
-        const state = initialStates[moduleId];
-
+        const state = window.initialStates[moduleId]; // <-- ici
+        if (!state) return;
         for (const field of fields) {
           const key = field.dataset.field;
           const current = field.type === 'checkbox' ? field.checked : field.value;
@@ -544,146 +395,188 @@
         hideSaveBar();
       }
 
-      // Réinitialise les champs du module actif
-      function resetForm(moduleId) {
+      function storeInitialState(moduleId) {
         const container = document.getElementById(moduleId);
-        const state = initialStates[moduleId];
+        if (!container) return;
         const fields = container.querySelectorAll('[data-field]');
+        window.initialStates[moduleId] = {};
         fields.forEach(field => {
           const key = field.dataset.field;
-          if (field.type === 'checkbox') {
-            field.checked = state[key];
+          window.initialStates[moduleId][key] = field.type === 'checkbox' ? field.checked : field.value;
+        });
+      }
+
+
+      // Récupère tous les boutons de modules et tous les modules
+      const buttons = document.querySelectorAll('aside button[data-module]');
+      const modules = document.querySelectorAll('.module-config');
+
+      // Gestion du clic sur chaque bouton de module
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const moduleKey = button.dataset.module;
+          const moduleId = `module-${moduleKey}`;
+          const targetModule = document.getElementById(moduleId);
+
+          currentModuleId = moduleId;
+          // Si c'est le module welcome, on charge dynamiquement si besoin
+          if (moduleKey === "welcome" && !targetModule.dataset.loaded) {
+            fetch('../composants/modules/memberUpdate.html')
+              .then(res => res.text())
+              .then(html => {
+                const targetModule = document.getElementById('module-welcome');
+                targetModule.innerHTML = html;
+                targetModule.dataset.loaded = "true";
+                targetModule.classList.remove('hidden');
+
+                // Charge dynamiquement le JS du module
+                const script = document.createElement('script');
+                script.src = '../composants/modules/memberUpdate.js';
+                script.onload = () => {
+                  if (!window.welcomeModuleLoaded) {
+                    const script = document.createElement('script');
+                    script.src = '../composants/modules/memberUpdate.js';
+                    script.onload = () => {
+                      window.welcomeModuleLoaded = true;
+                      if (typeof initWelcomeModule === "function") {
+                        initWelcomeModule();
+                      }
+                    };
+                    document.body.appendChild(script);
+                  } else {
+                    if (typeof initWelcomeModule === "function") {
+                      initWelcomeModule();
+                    }
+                  }
+                };
+                document.body.appendChild(script);
+              });
           } else {
-            field.value = state[key];
+            // Affiche le module demandé et masque les autres
+            modules.forEach(mod => mod.classList.add('hidden'));
+            targetModule.classList.remove('hidden');
           }
+
+          // Met à jour le style actif sur le bouton
+          buttons.forEach(b => b.classList.remove('bg-gray-800'));
+          button.classList.add('bg-gray-800');
+        });
+      });
+
+      
+
+      fetch('../composants/footer.html')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('footer-container').innerHTML = html;
         });
 
-        // Appliquer affichage conditionnel
-        if (moduleId === "module-welcome") {
+      let currentModuleId = null;
+
+      function resetForm(moduleId) {
+      const container = document.getElementById(moduleId);
+      const state = initialStates[moduleId];
+      const fields = container.querySelectorAll('[data-field]');
+      fields.forEach(field => {
+          const key = field.dataset.field;
+          if (field.type === 'checkbox') {
+          field.checked = state[key];
+          } else {
+          field.value = state[key];
+          }
+      });
+
+      // Appliquer affichage conditionnel
+      if (moduleId === "module-welcome") {
           document.getElementById('welcome-config').classList.toggle('hidden', !state["welcomeEnabled"]);
           document.getElementById('leave-config').classList.toggle('hidden', !state["leaveEnabled"]);
-        }
+      }
 
-        hideSaveBar();
+      hideSaveBar();
       }
 
       // Sauvegarde (simulation console.log ici)
       function saveForm(moduleId) {
-        const container = document.getElementById(moduleId);
-        const fields = container.querySelectorAll('[data-field]');
-        const data = {};
-        let missing = [];
+      const container = document.getElementById(moduleId);
+      const fields = container.querySelectorAll('[data-field]');
+      const data = {};
+      let missing = [];
 
-        fields.forEach(field => {
+      fields.forEach(field => {
           const value = field.type === 'checkbox' ? field.checked : field.value;
           data[field.dataset.field] = value;
 
           // Vérification des champs obligatoires
           // On saute la vérification ici pour les listes custom (welcomeChannels, welcomeRoles)
           if (
-            field.dataset.required === "true" &&
-            field.dataset.field !== "welcomeChannels" &&
-            field.dataset.field !== "welcomeRoles"
+          field.dataset.required === "true" &&
+          field.dataset.field !== "welcomeChannels" &&
+          field.dataset.field !== "welcomeRoles"
           ) {
-            if ((field.type === 'checkbox' && !field.checked) ||
-                (field.type !== 'checkbox' && (!value || value.trim() === ""))) {
+          if ((field.type === 'checkbox' && !field.checked) ||
+              (field.type !== 'checkbox' && (!value || value.trim() === ""))) {
               missing.push(field.dataset.field);
-            }
           }
-        });
+          }
+      });
 
-        // Vérifie aussi les listes custom (exemple pour welcomeRoles et welcomeChannels)
-        if (moduleId === "module-welcome") {
+      // Vérifie aussi les listes custom (exemple pour welcomeRoles et welcomeChannels)
+      if (moduleId === "module-welcome") {
           // Récupère les rôles sélectionnés
           data.welcomeRoles = Array.from(document.getElementById('selectedRoles').querySelectorAll('[data-role-id]')).map(el => ({
-            id: el.dataset.roleId,
-            name: el.querySelector('span')?.textContent || ''
+          id: el.dataset.roleId,
+          name: el.querySelector('span')?.textContent || ''
           }));
 
           // Récupère les salons sélectionnés
           data.welcomeChannels = Array.from(document.getElementById('selectedChannels').querySelectorAll('[data-channel-id]')).map(el => ({
-            id: el.dataset.channelId,
-            name: el.querySelector('span')?.textContent || ''
+          id: el.dataset.channelId,
+          name: el.querySelector('span')?.textContent || ''
           }));
 
           // Vérifie si la liste des salons est obligatoire
           const channelsField = document.querySelector('[data-field="welcomeChannels"][data-required="true"]');
           if (channelsField && (!data.welcomeChannels || data.welcomeChannels.length === 0)) {
-            missing.push('welcomeChannels');
+          missing.push('welcomeChannels');
           }
 
           // Vérifie si la sélection de rôles est obligatoire (si assignRole est coché)
           const assignRoleChecked = document.getElementById('assignRoleCheckbox')?.checked;
           if (assignRoleChecked) {
-            if (!data.welcomeRoles || data.welcomeRoles.length === 0) {
+          if (!data.welcomeRoles || data.welcomeRoles.length === 0) {
               missing.push('welcomeRoles');
-            }
           }
-        }
+          }
+      }
 
-        if (missing.length > 0) {
+      if (missing.length > 0) {
           alert("Les champs obligatoires suivants sont manquants : " + missing.join(', '));
           return;
-        }
+      }
 
-        data.guildId = document.getElementById('guildData').dataset.guildId || localStorage.getItem('activeGuildId');
+      data.guildId = document.getElementById('guildData').dataset.guildId || localStorage.getItem('activeGuildId');
 
-        fetch('/dashboard/save', {
+      fetch('/dashboard/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
-        })
+      })
           .then(res => res.json())
           .then(result => {
-            if (result.success) {
+          if (result.success) {
               alert('Configuration sauvegardée !');
               storeInitialState(moduleId);
               hideSaveBar();
-            } else {
+          } else {
               alert('Erreur lors de la sauvegarde : ' + (result.error || 'inconnue'));
-            }
+          }
           })
           .catch(() => {
-            alert('Erreur réseau lors de la sauvegarde.');
+          alert('Erreur réseau lors de la sauvegarde.');
           });
       }
 
-      // Barre de sauvegarde
-      function showSaveBar() {
-        saveBar.classList.remove('hidden');
-      }
-      function hideSaveBar() {
-        saveBar.classList.add('hidden');
-      }
-
-      // Écoute des interactions (input/change)
-      modules.forEach(mod => {
-        const modId = mod.id;
-        mod.addEventListener('input', () => checkChanges(modId));
-        mod.addEventListener('change', () => checkChanges(modId));
-      });
-
-      // Sidebar : affichage du module actif
-      buttons.forEach(button => {
-        button.addEventListener('click', () => {
-          const moduleKey = button.dataset.module;
-          const moduleId = `module-${moduleKey}`;
-          currentModuleId = moduleId;
-
-          // Affiche le bon module
-          modules.forEach(mod => mod.classList.add('hidden'));
-          document.getElementById(moduleId)?.classList.remove('hidden');
-
-          // Applique style bouton
-          buttons.forEach(b => b.classList.remove('bg-gray-800'));
-          button.classList.add('bg-gray-800');
-
-          // Stocke l’état initial
-          setTimeout(() => storeInitialState(moduleId), 0);
-        });
-      });
-
-      // Liens vers boutons de la saveBar
+      // Gestion des boutons de la savebar
       document.getElementById('resetWelcome')?.addEventListener('click', () => {
         if (currentModuleId) resetForm(currentModuleId);
       });
@@ -691,161 +584,6 @@
         if (currentModuleId) saveForm(currentModuleId);
       });
       
-      // Dropdown rôles
-      const addRoleBtn = document.getElementById('addWelcomeRole');
-      const roleDropdown = document.getElementById('roleDropdown');
-      const roleOptions = document.getElementById('roleOptions');
-      let allRoles = [];
-
-      addRoleBtn.addEventListener('click', async () => {
-        const guildId = localStorage.getItem('activeGuildId') || document.getElementById('guildData').dataset.guildId;
-        if (!guildId) return alert("Veuillez d'abord sélectionner un serveur.");
-
-        // Toggle dropdown
-        roleDropdown.classList.toggle('hidden');
-
-        // Si déjà chargé, pas besoin de refetch
-        if (allRoles.length > 0) return;
-
-        try {
-          const res = await fetch(`/dashboard/guilds/${guildId}/roles`);
-          if (!res.ok) {
-            const { error } = await res.json();
-            return alert(`Erreur : ${error}`);
-          }
-
-          allRoles = await res.json();
-          roleOptions.innerHTML = '';
-
-          allRoles.forEach(role => {
-            const li = document.createElement('li');
-            li.textContent = role.name + (role.managed ? ' (géré)' : '');
-            li.className = "px-4 py-2 hover:bg-white/10 cursor-pointer transition";
-            li.dataset.roleId = role.id;
-
-            li.addEventListener('click', () => {
-              ajouterItem(role, "role");
-              roleDropdown.classList.add('hidden');
-            });
-
-            roleOptions.appendChild(li);
-          });
-
-        } catch (err) {
-          console.error(err);
-          alert("Erreur lors du chargement des rôles.");
-        }
-      });
-
-      // Dropdown salons
-      const addChannelBtn = document.getElementById('addWelcomeChannel');
-      const channelDropdown = document.getElementById('channelDropdown');
-      const channelOptions = document.getElementById('channelOptions');
-      let allChannels = [];
-
-      addChannelBtn.addEventListener('click', async () => {
-        const guildId = localStorage.getItem('activeGuildId') || document.getElementById('guildData').dataset.guildId;
-        if (!guildId) return alert("Veuillez d'abord sélectionner un serveur.");
-
-        // Toggle dropdown
-        channelDropdown.classList.toggle('hidden');
-
-        // Si déjà chargé, pas besoin de refetch
-        if (allChannels.length > 0) return;
-
-        try {
-          const res = await fetch(`/dashboard/guilds/${guildId}/salons`);
-          if (!res.ok) {
-            const { error } = await res.json();
-            return alert(`Erreur : ${error}`);
-          }
-
-          allChannels = await res.json();
-          channelOptions.innerHTML = '';
-
-          allChannels.forEach(channel => {
-            const li = document.createElement('li');
-            li.textContent = channel.name;
-            li.className = "px-4 py-2 hover:bg-white/10 cursor-pointer transition";
-            li.dataset.channelId = channel.id;
-
-            li.addEventListener('click', () => {
-              ajouterItem(channel, "channel");
-              channelDropdown.classList.add('hidden');
-            });
-
-            channelOptions.appendChild(li);
-          });
-
-        } catch (err) {
-          console.error(err);
-          alert("Erreur lors du chargement des salons.");
-        }
-      });
-
-      function updateSelectPrompt(type = "role") {
-        // Détermine l'ID de la liste selon le type
-        const listId = type === "role" ? 'selectedRoles' : 'selectedChannels';
-        const selectedList = document.getElementById(listId);
-        if (!selectedList) return;
-
-        // Supprime les anciens prompts
-        const oldPrompt = selectedList.querySelector('.select-' + type + '-placeholder');
-        if (oldPrompt) oldPrompt.remove();
-
-        // Vérifie s'il y a des éléments sélectionnés
-        const dataAttr = type === "role" ? 'data-role-id' : 'data-channel-id';
-        const hasItems = selectedList.querySelectorAll(`[${dataAttr}]`).length > 0;
-
-        if (!hasItems) {
-          const li = document.createElement('li');
-          li.className = `text-gray-400 select-${type}-placeholder`;
-          li.textContent = `Sélectionner un ${type}`;
-          selectedList.appendChild(li);
-        }
-      }
-
-      // Fonction d’ajout de rôle dans la liste
-      function ajouterItem(item, type = "role") {
-        // type = "role" ou "channel"
-        const listId = type === "role" ? 'selectedRoles' : 'selectedChannels';
-        const selectedList = document.getElementById(listId);
-        if (!selectedList) return;
-
-        // Ne rien faire si déjà présent
-        if (selectedList.querySelector(`[data-${type}-id="${item.id}"]`)) return;
-
-        // Crée l'élément LI
-        const elem = document.createElement('li');
-        elem.className = "bg-white/10 px-2 py-1 rounded-full text-sm flex items-center gap-2";
-        elem.dataset[`${type}Id`] = item.id;
-
-        elem.innerHTML = `
-          <span>${item.name}</span>
-          <button class="text-red-400 hover:text-red-600" title="Supprimer">×</button>
-        `;
-
-        elem.querySelector('button').addEventListener('click', () => {
-          elem.remove();
-          updateSelectPrompt(type);
-        });
-
-        selectedList.appendChild(elem);
-        updateSelectPrompt(type);
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        updateSelectPrompt("role");
-        updateSelectPrompt("channel");
-      });
-    </script>
-    <footer id="footer-container"></footer>
-    <script>
-        fetch('../composants/footer.html')
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('footer-container').innerHTML = html;
-        });
     </script>
   </body>
 </html>
